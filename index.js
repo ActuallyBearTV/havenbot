@@ -5,6 +5,8 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const { toggleSelfRole } = require("./src/buttons/selfRoles");
+
 const banCommand = require("./src/commands/ban");
 const kickCommand = require("./src/commands/kick");
 const timeoutCommand = require("./src/commands/timeout");
