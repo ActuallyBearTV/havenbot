@@ -33,14 +33,18 @@ client.once("ready", () => {
 client.on("interactionCreate", async interaction => {
   try {
     if (interaction.isButton()) {
-      if (interaction.customId.startsWith("colour_")) {
-        return toggleColourRole(interaction);
-      }
+  if (interaction.customId === "open_ticket") {
+    return ticketCommand.execute(interaction);
+  }
 
-      if (interaction.customId.startsWith("ping_")) {
-        return toggleOptionalPing(interaction);
-      }
-    }
+  if (interaction.customId.startsWith("colour_")) {
+    return toggleColourRole(interaction);
+  }
+
+  if (interaction.customId.startsWith("ping_")) {
+    return toggleOptionalPing(interaction);
+  }
+}
 
     if (interaction.isChatInputCommand()) {
       if (interaction.commandName === "setup-colour-roles") {
