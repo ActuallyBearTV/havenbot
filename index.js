@@ -13,6 +13,7 @@ const {
 } = require("discord.js");
 
 const { havenEmbed } = require("./src/utils/embed");
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -39,6 +40,7 @@ const OPTIONAL_PINGS = [
   { name: "💗 Chat Revive", id: "ping_chat_revive" },
   { name: "🎙️ VC Revive", id: "ping_vc_revive" },
   { name: "❓ Daily Question", id: "ping_daily_question" }
+];
 
 function findChannel(guild, name) {
   return guild.channels.cache.find(channel =>
