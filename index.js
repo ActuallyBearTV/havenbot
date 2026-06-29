@@ -12,6 +12,7 @@ const {
   ButtonStyle
 } = require("discord.js");
 
+const { toggleOptionalPing } = require("./src/buttons/optionalPings");
 const { toggleColourRole } = require("./src/buttons/colourRoles");
 const { havenEmbed } = require("./src/utils/embed");
 const {
