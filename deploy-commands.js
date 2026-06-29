@@ -9,6 +9,18 @@ const commands = [
   new SlashCommandBuilder().setName("verify").setDescription("Verify yourself."),
   new SlashCommandBuilder().setName("ticket").setDescription("Open a support ticket."),
   new SlashCommandBuilder().setName("close-ticket").setDescription("Close this ticket.").setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
+  new SlashCommandBuilder()
+  .setName("purge")
+  .setDescription("Delete a number of messages from this channel.")
+  .addIntegerOption(option =>
+    option
+      .setName("amount")
+      .setDescription("Number of messages to delete")
+      .setRequired(true)
+      .setMinValue(1)
+      .setMaxValue(100)
+  )
+  .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
   new SlashCommandBuilder().setName("post-custom").setDescription("Open a popup form to post a custom announcement.").setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
   new SlashCommandBuilder().setName("post-update").setDescription("Post the default Haven update.").setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
   new SlashCommandBuilder().setName("revive-chat").setDescription("Ping Chat Revive.").setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
