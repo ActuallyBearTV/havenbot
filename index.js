@@ -5,6 +5,7 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const slowmodeCommand = require("./src/commands/slowmode");
 const unlockCommand = require("./src/commands/unlock");
 const lockCommand = require("./src/commands/lock");
 const purgeCommand = require("./src/commands/purge");
@@ -63,6 +64,9 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "slowmode") {
+  return slowmodeCommand.execute(interaction);
+}
       if (interaction.commandName === "unlock") {
     return unlockCommand.execute(interaction);
 }
