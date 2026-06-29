@@ -14,6 +14,10 @@ const {
 
 const { havenEmbed } = require("./src/utils/embed");
 const {
+  findChannel,
+  findRole
+} = require("./src/utils/finders");
+const {
   COLOUR_ROLES,
   OPTIONAL_PINGS
 } = require("./src/config/constants");
@@ -24,16 +28,6 @@ const client = new Client({
     GatewayIntentBits.GuildMembers
   ]
 });
-
-function findChannel(guild, name) {
-  return guild.channels.cache.find(channel =>
-    channel.name === name || channel.name === name.toLowerCase()
-  );
-}
-
-function findRole(guild, name) {
-  return guild.roles.cache.find(role => role.name === name);
-}
 
 async function createColourRoles(guild) {
   for (const colour of COLOUR_ROLES) {
