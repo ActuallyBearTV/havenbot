@@ -1,7 +1,8 @@
+const { sendLog } = require("../utils/logs");
+
 module.exports = {
   name: "close-ticket",
 
-  const { sendLog } = require("../utils/logs");
   async execute(interaction) {
     if (!interaction.channel.name.startsWith("ticket-")) {
       return interaction.reply({
@@ -10,17 +11,17 @@ module.exports = {
       });
     }
 
-    await interaction.reply({
-  content: "🔒 Closing ticket in 5 seconds..."
-});
+    await interaction.reply("Closing this ticket in 5 seconds...");
 
-await sendLog(
-  interaction.guild,
-  "🔒 Ticket Closed",
-  `${interaction.user} closed ${interaction.channel}`,
-  "#EF4444"
-);
+    await sendLog(
+      interaction.guild,
+      "🔒 Ticket Closed",
+      `${interaction.user} closed ${interaction.channel}`,
+      "#EF4444"
+    );
 
-setTimeout(() => {
-  interaction.channel.delete();
-}, 5000);
+    setTimeout(() => {
+      interaction.channel.delete("Ticket closed").catch(console.error);
+    }, 5000);
+  }
+};
