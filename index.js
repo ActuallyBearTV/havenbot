@@ -33,16 +33,16 @@ client.once("ready", () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
-client.on("interactionCreate", async interaction => {
-  try {
-    if (interaction.isButton()) {
+if (interaction.isButton()) {
+  console.log("BUTTON CLICKED:", interaction.customId);
+
   if (
-  interaction.customId === "verify_button" ||
-  interaction.customId === "verify" ||
-  interaction.customId === "haven_verify"
-) {
-  return verifyMember(interaction);
-}
+    interaction.customId === "verify_button" ||
+    interaction.customId === "verify" ||
+    interaction.customId === "haven_verify"
+  ) {
+    return verifyMember(interaction);
+  }
 
   if (interaction.customId === "open_ticket") {
     return ticketCommand.execute(interaction);
