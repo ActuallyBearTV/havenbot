@@ -8,7 +8,9 @@ const {
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
-  ActionRowBuilder
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
 } = require("discord.js");
 
 const client = new Client({
@@ -18,13 +20,143 @@ const client = new Client({
   ]
 });
 
-function havenEmbed(title, message) {
+const COLOUR_ROLES = [
+  { name: "❤️ Crimson", hex: "#E53935", id: "colour_crimson" },
+  { name: "🩷 Pink", hex: "#EC4899", id: "colour_pink" },
+  { name: "💜 Purple", hex: "#8B5CF6", id: "colour_purple" },
+  { name: "💙 Blue", hex: "#3B82F6", id: "colour_blue" },
+  { name: "🩵 Cyan", hex: "#06B6D4", id: "colour_cyan" },
+  { name: "💚 Green", hex: "#22C55E", id: "colour_green" },
+  { name: "💛 Yellow", hex: "#FACC15", id: "colour_yellow" },
+  { name: "🧡 Orange", hex: "#F97316", id: "colour_orange" },
+  { name: "🤎 Brown", hex: "#8B5A2B", id: "colour_brown" },
+  { name: "🤍 White", hex: "#FFFFFF", id: "colour_white" },
+  { name: "🩶 Grey", hex: "#6B7280", id: "colour_grey" },
+  { name: "🖤 Black", hex: "#1F2937", id: "colour_black" }
+];
+
+function havenEmbed(title, message, color = "#8B5CF6") {
   return new EmbedBuilder()
-    .setColor("#8B5CF6")
+    .setColor(color)
     .setTitle(title)
     .setDescription(message)
     .setFooter({ text: "Haven • A community to belong" })
     .setTimestamp();
+}
+
+function findChannel(guild, name) {
+  return guild.channels.cache.find(channel =>
+    channel.name === name || channel.name === name.toLowerCase()
+  );
+}
+
+function findRole(guild, name) {
+  return guild.roles.cache.find(role => role.name === name);
+}
+
+async function createColourRoles(guild) {
+  for (const colour of COLOUR_ROLES) {
+    const existingRole = findRole(guild, colour.name);
+
+    if (!existingRole) {
+      await guild.roles.create({
+        name: colour.name,
+        color: colour.hex,
+        hoist: false,
+        mentionable: false,
+        reason: "Haven colour role setup"
+      });
+    }
+  }
+}
+
+async function postColourRoleMenu(guild) {
+  const channel = findChannel(guild, "🎨・colour-roles");
+
+  if (!channel) {
+    throw new Error("Could not find 🎨・colour-roles channel.");
+  }
+
+  const rows = [];
+  let currentRow = new ActionRowBuilder();
+
+  COLOUR_ROLES.forEach((colour, index) => {
+    if (index > 0 && index % 4 === 0) {
+      rows.push(currentRow);
+      currentRow = new ActionRowBuilder();
+    }
+
+    currentRow.addComponents(
+      new ButtonBuilder()
+        .setCustomId(colour.id)
+        .setLabel(colour.name)
+        .setStyle(ButtonStyle.Secondary)
+    );
+  });
+
+  rows.push(currentRow);
+
+  await channel.send({
+    embeds: [
+      havenEmbed(
+        "🎨 Choose Your Colour",
+        [
+          "Personalise your name with your favourite colour!",
+          "",
+          "Click a button below to choose your colour role.",
+          "",
+          "You can only have **one colour role** at a time.",
+          "Choosing a new colour will remove your old one."
+        ].join("\n"),
+        "#8B5CF6"
+      )
+    ],
+    components: rows
+  });
+}
+
+async function toggleColourRole(interaction) {
+  const selectedColour = COLOUR_ROLES.find(colour => colour.id === interaction.customId);
+
+  if (!selectedColour) return;
+
+  const selectedRole = findRole(interaction.guild, selectedColour.name);
+
+  if (!selectedRole) {
+    return interaction.reply({
+      content: "That colour role does not exist yet. Ask staff to run `/setup-colour-roles`.",
+      ephemeral: true
+    });
+  }
+
+  const colourRoleIds = COLOUR_ROLES
+    .map(colour => findRole(interaction.guild, colour.name))
+    .filter(Boolean)
+    .map(role => role.id);
+
+  const rolesToRemove = interaction.member.roles.cache
+    .filter(role => colourRoleIds.includes(role.id) && role.id !== selectedRole.id)
+    .map(role => role.id);
+
+  if (rolesToRemove.length > 0) {
+    await interaction.member.roles.remove(rolesToRemove);
+  }
+
+  if (interaction.member.roles.cache.has(selectedRole.id)) {
+    await interaction.member.roles.remove(selectedRole);
+
+    return interaction.reply({
+      content: `Removed ${selectedColour.name}.`,
+      ephemeral: true
+    });
+  }
+
+  await interaction.member.roles.add(selectedRole);
+
+  return interaction.reply({
+    content: `Your colour is now ${selectedColour.name}.`,
+    ephemeral: true
+  });
 }
 
 client.once("ready", () => {
@@ -33,7 +165,35 @@ client.once("ready", () => {
 
 client.on("interactionCreate", async interaction => {
   try {
+    if (interaction.isButton()) {
+      if (interaction.customId.startsWith("colour_")) {
+        return toggleColourRole(interaction);
+      }
+    }
+
     if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "setup-colour-roles") {
+        if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
+          return interaction.reply({
+            content: "You need Administrator permission to use this command.",
+            ephemeral: true
+          });
+        }
+
+        await interaction.reply({
+          content: "Setting up colour roles...",
+          ephemeral: true
+        });
+
+        await createColourRoles(interaction.guild);
+        await postColourRoleMenu(interaction.guild);
+
+        return interaction.followUp({
+          content: "Colour roles are ready.",
+          ephemeral: true
+        });
+      }
+
       if (interaction.commandName === "post-custom") {
         if (!interaction.memberPermissions.has(PermissionFlagsBits.ManageMessages)) {
           return interaction.reply({
