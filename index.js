@@ -1,11 +1,12 @@
 require("dotenv").config();
 
-const {
-  Client,
-  GatewayIntentBits,
-  PermissionFlagsBits
-} = require("discord.js");
-
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildPresences
+  ]
+});
 const { sendStaffLog } = require("./src/utils/staffLogs");
 const setupTicketPanel = require("./src/commands/setupTicketPanel");
 const ticketCommand = require("./src/commands/ticket");
