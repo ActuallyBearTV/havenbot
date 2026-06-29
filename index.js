@@ -12,6 +12,7 @@ const {
   ButtonStyle
 } = require("discord.js");
 
+const verifyCommand = require("./src/commands/verify");
 const { toggleOptionalPing } = require("./src/buttons/optionalPings");
 const { toggleColourRole } = require("./src/buttons/colourRoles");
 const { havenEmbed } = require("./src/utils/embed");
@@ -247,13 +248,9 @@ client.on("interactionCreate", async interaction => {
 
         return interaction.showModal(modal);
       }
-
-      if (interaction.commandName === "verify") {
-        return interaction.reply({
-          content: "✅ Haven Bot is online and working!",
-          ephemeral: true
-        });
-      }
+if (interaction.commandName === "verify") {
+  return verifyCommand.execute(interaction);
+}
 
       return interaction.reply({
         content: "This command is installed, but this feature has not been connected yet.",
