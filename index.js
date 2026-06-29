@@ -150,38 +150,6 @@ async function postOptionalPingMenu(guild) {
   });
 }
 
-
-
-  const colourRoleIds = COLOUR_ROLES
-    .map(colour => findRole(interaction.guild, colour.name))
-    .filter(Boolean)
-    .map(role => role.id);
-
-  const rolesToRemove = interaction.member.roles.cache
-    .filter(role => colourRoleIds.includes(role.id) && role.id !== selectedRole.id)
-    .map(role => role.id);
-
-  if (rolesToRemove.length > 0) {
-    await interaction.member.roles.remove(rolesToRemove);
-  }
-
-  if (interaction.member.roles.cache.has(selectedRole.id)) {
-    await interaction.member.roles.remove(selectedRole);
-
-    return interaction.reply({
-      content: `Removed ${selectedColour.name}.`,
-      ephemeral: true
-    });
-  }
-
-  await interaction.member.roles.add(selectedRole);
-
-  return interaction.reply({
-    content: `Your colour is now ${selectedColour.name}.`,
-    ephemeral: true
-  });
-}
-
 async function toggleOptionalPing(interaction) {
   const selectedPing = OPTIONAL_PINGS.find(ping => ping.id === interaction.customId);
 
