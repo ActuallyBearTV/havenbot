@@ -3,6 +3,16 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+  .setName("warn")
+  .setDescription("Warn a member.")
+  .addUserOption(option =>
+    option.setName("user").setDescription("The member to warn").setRequired(true)
+  )
+  .addStringOption(option =>
+    option.setName("reason").setDescription("Reason for the warning").setRequired(true)
+  )
+  .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+  new SlashCommandBuilder()
   .setName("setup-self-roles")
   .setDescription("Post the gender, age, location, and interest role panels.")
   .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
