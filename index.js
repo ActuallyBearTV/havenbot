@@ -12,6 +12,7 @@ const {
   ButtonStyle
 } = require("discord.js");
 
+const setupColourRoles = require("./src/commands/setupColourRoles");
 const verifyCommand = require("./src/commands/verify");
 const { toggleOptionalPing } = require("./src/buttons/optionalPings");
 const { toggleColourRole } = require("./src/buttons/colourRoles");
@@ -32,21 +33,7 @@ const client = new Client({
   ]
 });
 
-async function createColourRoles(guild) {
-  for (const colour of COLOUR_ROLES) {
-    const existingRole = findRole(guild, colour.name);
 
-    if (!existingRole) {
-      await guild.roles.create({
-        name: colour.name,
-        color: colour.hex,
-        hoist: false,
-        mentionable: false,
-        reason: "Haven colour role setup"
-      });
-    }
-  }
-}
 
 async function createOptionalPingRoles(guild) {
   for (const ping of OPTIONAL_PINGS) {
@@ -64,12 +51,6 @@ async function createOptionalPingRoles(guild) {
   }
 }
 
-async function postColourRoleMenu(guild) {
-  const channel = findChannel(guild, "🎨・colour-roles");
-
-  if (!channel) {
-    throw new Error("Could not find 🎨・colour-roles channel.");
-  }
 
   const rows = [];
   let currentRow = new ActionRowBuilder();
@@ -167,15 +148,9 @@ client.on("interactionCreate", async interaction => {
         return toggleOptionalPing(interaction);
       }
     }
-
-    if (interaction.isChatInputCommand()) {
-      if (interaction.commandName === "setup-colour-roles") {
-        if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
-          return interaction.reply({
-            content: "You need Administrator permission to use this command.",
-            ephemeral: true
-          });
-        }
+if (interaction.commandName === "setup-colour-roles") {
+    return setupColourRoles.execute(interaction);
+}
 
         await interaction.reply({
           content: "Setting up colour roles...",
