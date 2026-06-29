@@ -6,6 +6,7 @@ const {
   PermissionFlagsBits
 } = require("discord.js");
 
+const customAnnouncementModal = require("./src/modals/customAnnouncement");
 const { havenEmbed } = require("./src/utils/embed");
 const { toggleColourRole } = require("./src/buttons/colourRoles");
 const { toggleOptionalPing } = require("./src/buttons/optionalPings");
@@ -60,22 +61,11 @@ client.on("interactionCreate", async interaction => {
         ephemeral: true
       });
     }
-
-    if (interaction.isModalSubmit()) {
-      if (interaction.customId !== "haven_custom_announcement_modal") return;
-
-      const title = interaction.fields.getTextInputValue("announcement_title");
-      const message = interaction.fields.getTextInputValue("announcement_message");
-
-      await interaction.channel.send({
-        embeds: [havenEmbed(`📢 ${title}`, message)]
-      });
-
-      return interaction.reply({
-        content: "Announcement posted.",
-        ephemeral: true
-      });
-    }
+if (interaction.isModalSubmit()) {
+  if (interaction.customId === customAnnouncementModal.customId) {
+    return customAnnouncementModal.execute(interaction);
+  }
+}
   } catch (error) {
     console.error(error);
 
