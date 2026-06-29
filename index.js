@@ -3,27 +3,23 @@ require("dotenv").config();
 const {
   Client,
   GatewayIntentBits,
-  PermissionFlagsBits,
-  ModalBuilder,
-  TextInputBuilder,
-  TextInputStyle,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle
+  PermissionFlagsBits
 } = require("discord.js");
 
-const postCustom = require("./src/commands/postCustom");
-const setupOptionalPings = require("./src/commands/setupOptionalPings");
 const { havenEmbed } = require("./src/utils/embed");
-const { findChannel, findRole } = require("./src/utils/finders");
-const { COLOUR_ROLES, OPTIONAL_PINGS } = require("./src/config/constants");
 const { toggleColourRole } = require("./src/buttons/colourRoles");
 const { toggleOptionalPing } = require("./src/buttons/optionalPings");
+
 const verifyCommand = require("./src/commands/verify");
 const setupColourRoles = require("./src/commands/setupColourRoles");
+const setupOptionalPings = require("./src/commands/setupOptionalPings");
+const postCustom = require("./src/commands/postCustom");
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers
+  ]
 });
 
 client.once("ready", () => {
@@ -46,38 +42,13 @@ client.on("interactionCreate", async interaction => {
       if (interaction.commandName === "setup-colour-roles") {
         return setupColourRoles.execute(interaction);
       }
-if (interaction.commandName === "setup-optional-pings") {
-    return setupOptionalPings.execute(interaction);
-}
 
-      
+      if (interaction.commandName === "setup-optional-pings") {
+        return setupOptionalPings.execute(interaction);
+      }
 
-        const modal = new ModalBuilder()
-          .setCustomId("haven_custom_announcement_modal")
-          .setTitle("Haven Announcement");
-
-        const titleInput = new TextInputBuilder()
-          .setCustomId("announcement_title")
-          .setLabel("Announcement Title")
-          .setPlaceholder("Example: Colour Roles Are Live!")
-          .setStyle(TextInputStyle.Short)
-          .setRequired(true)
-          .setMaxLength(100);
-
-        const messageInput = new TextInputBuilder()
-          .setCustomId("announcement_message")
-          .setLabel("Announcement Message")
-          .setPlaceholder("Type what you want the bot to say...")
-          .setStyle(TextInputStyle.Paragraph)
-          .setRequired(true)
-          .setMaxLength(4000);
-
-        modal.addComponents(
-          new ActionRowBuilder().addComponents(titleInput),
-          new ActionRowBuilder().addComponents(messageInput)
-        );
-
-        return interaction.showModal(modal);
+      if (interaction.commandName === "post-custom") {
+        return postCustom.execute(interaction);
       }
 
       if (interaction.commandName === "verify") {
