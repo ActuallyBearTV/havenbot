@@ -6,6 +6,8 @@ const {
   PermissionFlagsBits
 } = require("discord.js");
 
+const ticketCommand = require("./src/commands/ticket");
+const closeTicketCommand = require("./src/commands/closeTicket");
 const customAnnouncementModal = require("./src/modals/customAnnouncement");
 const { havenEmbed } = require("./src/utils/embed");
 const { toggleColourRole } = require("./src/buttons/colourRoles");
@@ -55,6 +57,13 @@ client.on("interactionCreate", async interaction => {
       if (interaction.commandName === "verify") {
         return verifyCommand.execute(interaction);
       }
+      if (interaction.commandName === "ticket") {
+  return ticketCommand.execute(interaction);
+}
+
+if (interaction.commandName === "close-ticket") {
+  return closeTicketCommand.execute(interaction);
+}
 
       return interaction.reply({
         content: "This command is installed, but this feature has not been connected yet.",
