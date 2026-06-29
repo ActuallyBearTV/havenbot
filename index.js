@@ -12,6 +12,7 @@ const {
   ButtonStyle
 } = require("discord.js");
 
+const { toggleColourRole } = require("./src/buttons/colourRoles");
 const { havenEmbed } = require("./src/utils/embed");
 const {
   findChannel,
@@ -149,19 +150,7 @@ async function postOptionalPingMenu(guild) {
   });
 }
 
-async function toggleColourRole(interaction) {
-  const selectedColour = COLOUR_ROLES.find(colour => colour.id === interaction.customId);
 
-  if (!selectedColour) return;
-
-  const selectedRole = findRole(interaction.guild, selectedColour.name);
-
-  if (!selectedRole) {
-    return interaction.reply({
-      content: "That colour role does not exist yet. Ask staff to run `/setup-colour-roles`.",
-      ephemeral: true
-    });
-  }
 
   const colourRoleIds = COLOUR_ROLES
     .map(colour => findRole(interaction.guild, colour.name))
