@@ -12,7 +12,6 @@ const setupTicketPanel = require("./src/commands/setupTicketPanel");
 const ticketCommand = require("./src/commands/ticket");
 const closeTicketCommand = require("./src/commands/closeTicket");
 const customAnnouncementModal = require("./src/modals/customAnnouncement");
-const { havenEmbed } = require("./src/utils/embed");
 const { toggleColourRole } = require("./src/buttons/colourRoles");
 const { toggleOptionalPing } = require("./src/buttons/optionalPings");
 
@@ -33,29 +32,31 @@ client.once("ready", () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
-if (interaction.isButton()) {
-  console.log("BUTTON CLICKED:", interaction.customId);
+client.on("interactionCreate", async interaction => {
+  try {
+    if (interaction.isButton()) {
+      console.log("BUTTON CLICKED:", interaction.customId);
 
-  if (
-    interaction.customId === "verify_button" ||
-    interaction.customId === "verify" ||
-    interaction.customId === "haven_verify"
-  ) {
-    return verifyMember(interaction);
-  }
+      if (
+        interaction.customId === "verify_button" ||
+        interaction.customId === "verify" ||
+        interaction.customId === "haven_verify"
+      ) {
+        return verifyMember(interaction);
+      }
 
-  if (interaction.customId === "open_ticket") {
-    return ticketCommand.execute(interaction);
-  }
+      if (interaction.customId === "open_ticket") {
+        return ticketCommand.execute(interaction);
+      }
 
-  if (interaction.customId.startsWith("colour_")) {
-    return toggleColourRole(interaction);
-  }
+      if (interaction.customId.startsWith("colour_")) {
+        return toggleColourRole(interaction);
+      }
 
-  if (interaction.customId.startsWith("ping_")) {
-    return toggleOptionalPing(interaction);
-  }
-}
+      if (interaction.customId.startsWith("ping_")) {
+        return toggleOptionalPing(interaction);
+      }
+    }
 
     if (interaction.isChatInputCommand()) {
       if (interaction.commandName === "setup-colour-roles") {
@@ -73,27 +74,30 @@ if (interaction.isButton()) {
       if (interaction.commandName === "verify") {
         return verifyCommand.execute(interaction);
       }
-      if (interaction.commandName === "ticket") {
-  return ticketCommand.execute(interaction);
-}
 
-if (interaction.commandName === "close-ticket") {
-  return closeTicketCommand.execute(interaction);
-}
+      if (interaction.commandName === "ticket") {
+        return ticketCommand.execute(interaction);
+      }
+
+      if (interaction.commandName === "close-ticket") {
+        return closeTicketCommand.execute(interaction);
+      }
+
       if (interaction.commandName === "setup-ticket-panel") {
-  return setupTicketPanel.execute(interaction);
-}
+        return setupTicketPanel.execute(interaction);
+      }
 
       return interaction.reply({
         content: "This command is installed, but this feature has not been connected yet.",
         ephemeral: true
       });
     }
-if (interaction.isModalSubmit()) {
-  if (interaction.customId === customAnnouncementModal.customId) {
-    return customAnnouncementModal.execute(interaction);
-  }
-}
+
+    if (interaction.isModalSubmit()) {
+      if (interaction.customId === customAnnouncementModal.customId) {
+        return customAnnouncementModal.execute(interaction);
+      }
+    }
   } catch (error) {
     console.error(error);
 
@@ -110,6 +114,7 @@ if (interaction.isModalSubmit()) {
     });
   }
 });
+
 client.on("guildMemberAdd", async member => {
   console.log(`✅ JOIN EVENT: ${member.user.tag}`);
 
@@ -131,4 +136,5 @@ client.on("guildMemberRemove", async member => {
     "#EF4444"
   );
 });
+
 client.login(process.env.DISCORD_TOKEN);
