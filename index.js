@@ -35,69 +35,30 @@ client.once("ready", () => {
 
 client.on("interactionCreate", async interaction => {
   try {
-    if (interaction.isButton()) {
-      console.log("BUTTON CLICKED:", interaction.customId);
+    // all your button, command, and modal code here
 
-     if (
-  interaction.customId === "verify_member" ||
-  interaction.customId === "verify_button" ||
-  interaction.customId === "verify" ||
-  interaction.customId === "haven_verify"
-) {
-  return verifyMember(interaction);
-}
-
-      if (interaction.customId === "open_ticket") {
-        return ticketCommand.execute(interaction);
-      }
-
-      if (interaction.customId.startsWith("colour_")) {
-        return toggleColourRole(interaction);
-      }
-
-      if (interaction.customId.startsWith("ping_")) {
-        return toggleOptionalPing(interaction);
+    if (interaction.isModalSubmit()) {
+      if (interaction.customId === customAnnouncementModal.customId) {
+        return customAnnouncementModal.execute(interaction);
       }
     }
 
-    if (interaction.isChatInputCommand()) {
-      if (interaction.commandName === "setup-colour-roles") {
-        return setupColourRoles.execute(interaction);
-      }
+  } catch (error) {
+    console.error(error);
 
-      if (interaction.commandName === "setup-optional-pings") {
-        return setupOptionalPings.execute(interaction);
-      }
+    if (interaction.replied || interaction.deferred) {
+      return interaction.followUp({
+        content: "Something went wrong. Check the bot logs.",
+        ephemeral: true
+      });
+    }
 
-      if (interaction.commandName === "post-custom") {
-        return postCustom.execute(interaction);
-      }
-
-      if (interaction.commandName === "verify") {
-        return verifyCommand.execute(interaction);
-      }
-
-      if (interaction.commandName === "ticket") {
-        return ticketCommand.execute(interaction);
-      }
-
-      if (interaction.commandName === "close-ticket") {
-        return closeTicketCommand.execute(interaction);
-      }
-
-      if (interaction.commandName === "setup-ticket-panel") {
-  return setupTicketPanel.execute(interaction);
-}
-
-if (interaction.commandName === "purge") {
-  return purgeCommand.execute(interaction);
-}
-
-return interaction.reply({
-  content: "This command is installed, but this feature has not been connected yet.",
-  ephemeral: true
+    return interaction.reply({
+      content: "Something went wrong. Check the bot logs.",
+      ephemeral: true
+    });
+  }
 });
-
     if (interaction.isModalSubmit()) {
       if (interaction.customId === customAnnouncementModal.customId) {
         return customAnnouncementModal.execute(interaction);
