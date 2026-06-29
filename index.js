@@ -119,23 +119,31 @@ client.on("interactionCreate", async interaction => {
 client.on("guildMemberAdd", async member => {
   console.log(`✅ JOIN EVENT: ${member.user.tag}`);
 
-  await sendStaffLog(
-    member.guild,
-    "👤 Member Joined",
-    `${member} joined the server.\n\nAccount created: <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>`,
-    "#22C55E"
-  );
+  await sendStaffLog(member.guild, {
+    title: "📥 Member Joined",
+    description: `${member} joined the server.`,
+    user: member.user,
+    extra:
+      `📅 **Account Created:** <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>\n` +
+      `⏳ **Account Age:** <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>\n` +
+      `👥 **Member Count:** ${member.guild.memberCount}`,
+    color: "#22C55E"
+  });
 
   await sendWelcome(member);
 });
 
 client.on("guildMemberRemove", async member => {
-  await sendStaffLog(
-    member.guild,
-    "👋 Member Left",
-    `${member.user.tag} left the server.`,
-    "#EF4444"
-  );
+  await sendStaffLog(member.guild, {
+    title: "📤 Member Left",
+    description: `${member.user.tag} left the server.`,
+    user: member.user,
+    extra:
+      `📅 **Account Created:** <t:${Math.floor(member.user.createdTimestamp / 1000)}:F>\n` +
+      `⏳ **Account Age:** <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>\n` +
+      `👥 **Member Count:** ${member.guild.memberCount}`,
+    color: "#EF4444"
+  });
 });
 
 client.login(process.env.DISCORD_TOKEN);
