@@ -59,11 +59,11 @@ client.on("interactionCreate", async interaction => {
     });
   }
     if (interaction.isModalSubmit()) {
+          if (interaction.isModalSubmit()) {
       if (interaction.customId === customAnnouncementModal.customId) {
         return customAnnouncementModal.execute(interaction);
       }
     }
-
   } catch (error) {
     console.error(error);
 
