@@ -5,6 +5,7 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const { verifyMember } = require("./src/buttons/verify");
 const { sendWelcome } = require("./src/features/welcome");
 const { sendStaffLog } = require("./src/utils/staffLogs");
 const setupTicketPanel = require("./src/commands/setupTicketPanel");
@@ -35,6 +36,10 @@ client.once("ready", () => {
 client.on("interactionCreate", async interaction => {
   try {
     if (interaction.isButton()) {
+  if (interaction.customId === "verify_button") {
+    return verifyMember(interaction);
+  }
+
   if (interaction.customId === "open_ticket") {
     return ticketCommand.execute(interaction);
   }
