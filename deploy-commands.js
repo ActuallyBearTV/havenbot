@@ -3,6 +3,13 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+  .setName("warnings")
+  .setDescription("View a member's warnings.")
+  .addUserOption(option =>
+    option.setName("user").setDescription("The member to check").setRequired(true)
+  )
+  .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+  new SlashCommandBuilder()
   .setName("warn")
   .setDescription("Warn a member.")
   .addUserOption(option =>
