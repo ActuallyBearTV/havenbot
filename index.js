@@ -5,6 +5,7 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const removeWarnCommand = require("./src/commands/removewarn");
 const warningsCommand = require("./src/commands/warnings");
 const warnCommand = require("./src/commands/warn");
 
@@ -87,6 +88,7 @@ client.on("interactionCreate", async interaction => {
     if (interaction.isChatInputCommand()) {
       if (interaction.commandName === "setup-self-roles") return setupSelfRoles.execute(interaction);
 
+      if (interaction.commandName === "removewarn") return removeWarnCommand.execute(interaction);
       if (interaction.commandName === "warnings") return warningsCommand.execute(interaction);
       if (interaction.commandName === "warn") return warnCommand.execute(interaction);
       if (interaction.commandName === "ban") return banCommand.execute(interaction);
