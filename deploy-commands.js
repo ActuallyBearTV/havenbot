@@ -3,6 +3,10 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [
   new SlashCommandBuilder()
+    .setName("unlock")
+    .setDescription("Unlock this channel.")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
+  new SlashCommandBuilder()
   .setName("lock")
   .setDescription("Lock this channel so members cannot send messages.")
   .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
