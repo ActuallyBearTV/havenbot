@@ -1,21 +1,45 @@
-const { havenEmbed } = require("./embed");
-const { findChannel } = require("./finders");
+// src/utils/staffLogs.js
+const { EmbedBuilder } = require("discord.js");
 
-async function sendStaffLog(guild, title, message, color = "#60A5FA") {
-  const logChannel =
-    findChannel(guild, "📊・staff-logs") ||
-    findChannel(guild, "staff-logs");
+const STAFF_LOG_CHANNEL_ID = process.env.STAFF_LOG_CHANNEL_ID;
 
-  if (!logChannel) {
-    console.log("❌ Staff log channel not found.");
-    return;
+async function sendStaffLog(guild, options) {
+  if (!guild || !STAFF_LOG_CHANNEL_ID) return;
+
+  const channel = guild.channels.cache.get(STAFF_LOG_CHANNEL_ID);
+  if (!channel) return;
+
+  const embed = new EmbedBuilder()
+    .setColor(options.color || "#2b6cff")
+    .setTitle(options.title || "Staff Log")
+    .setDescription(options.description || "No details provided.")
+    .setTimestamp();
+
+  if (options.user) {
+    embed.addFields({
+      name: "User",
+      value: `${options.user} \`${options.user.id}\``,
+      inline: false
+    });
   }
 
-  return logChannel.send({
-    embeds: [havenEmbed(title, message, color)]
-  });
+  if (options.staff) {
+    embed.addFields({
+      name: "Staff",
+      value: `${options.staff} \`${options.staff.id}\``,
+      inline: false
+    });
+  }
+
+  if (options.extra) {
+    embed.addFields({
+      name: "Details",
+      value: options.extra,
+      inline: false
+    });
+  }
+
+  await channel.send({ embeds: [embed] });
 }
 
-module.exports = {
-  sendStaffLog
-};
+module.exports = { sendStaffLog };
