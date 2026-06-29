@@ -12,28 +12,17 @@ const {
   ButtonStyle
 } = require("discord.js");
 
-const setupColourRoles = require("./src/commands/setupColourRoles");
-const verifyCommand = require("./src/commands/verify");
-const { toggleOptionalPing } = require("./src/buttons/optionalPings");
-const { toggleColourRole } = require("./src/buttons/colourRoles");
 const { havenEmbed } = require("./src/utils/embed");
-const {
-  findChannel,
-  findRole
-} = require("./src/utils/finders");
-const {
-  COLOUR_ROLES,
-  OPTIONAL_PINGS
-} = require("./src/config/constants");
+const { findChannel, findRole } = require("./src/utils/finders");
+const { COLOUR_ROLES, OPTIONAL_PINGS } = require("./src/config/constants");
+const { toggleColourRole } = require("./src/buttons/colourRoles");
+const { toggleOptionalPing } = require("./src/buttons/optionalPings");
+const verifyCommand = require("./src/commands/verify");
+const setupColourRoles = require("./src/commands/setupColourRoles");
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers
-  ]
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
 });
-
-
 
 async function createOptionalPingRoles(guild) {
   for (const ping of OPTIONAL_PINGS) {
@@ -50,8 +39,6 @@ async function createOptionalPingRoles(guild) {
     }
   }
 }
-
-
 
 async function postOptionalPingMenu(guild) {
   const channel = findChannel(guild, "🔔・notification-roles");
@@ -111,22 +98,10 @@ client.on("interactionCreate", async interaction => {
         return toggleOptionalPing(interaction);
       }
     }
-if (interaction.commandName === "setup-colour-roles") {
-    return setupColourRoles.execute(interaction);
-}
 
-        await interaction.reply({
-          content: "Setting up colour roles...",
-          ephemeral: true
-        });
-
-        await createColourRoles(interaction.guild);
-        await postColourRoleMenu(interaction.guild);
-
-        return interaction.followUp({
-          content: "Colour roles are ready.",
-          ephemeral: true
-        });
+    if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "setup-colour-roles") {
+        return setupColourRoles.execute(interaction);
       }
 
       if (interaction.commandName === "setup-optional-pings") {
@@ -186,9 +161,10 @@ if (interaction.commandName === "setup-colour-roles") {
 
         return interaction.showModal(modal);
       }
-if (interaction.commandName === "verify") {
-  return verifyCommand.execute(interaction);
-}
+
+      if (interaction.commandName === "verify") {
+        return verifyCommand.execute(interaction);
+      }
 
       return interaction.reply({
         content: "This command is installed, but this feature has not been connected yet.",
