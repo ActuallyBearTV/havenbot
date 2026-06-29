@@ -4,6 +4,7 @@ const {
 } = require("discord.js");
 
 const { havenEmbed } = require("../utils/embed");
+const { sendLog } = require("../utils/logs");
 
 module.exports = {
   name: "ticket",
@@ -52,6 +53,14 @@ module.exports = {
         )
       ]
     });
+
+    
+    await sendLog(
+  guild,
+  "🎫 Ticket Opened",
+  `${member} opened ${ticketChannel}`,
+  "#22C55E"
+);
 
     return interaction.reply({
       content: `Ticket created: ${ticketChannel}`,
