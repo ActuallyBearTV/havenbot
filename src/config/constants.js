@@ -18,8 +18,32 @@ const OPTIONAL_PINGS = [
   { name: "🎙️ VC Revive", id: "ping_vc_revive" },
   { name: "❓ Daily Question", id: "ping_daily_question" }
 ];
+const SELF_ROLES = [
+  { name: "♂️ Male", id: "gender_male", group: "gender" },
+  { name: "♀️ Female", id: "gender_female", group: "gender" },
+  { name: "⚧️ Non-Binary", id: "gender_non_binary", group: "gender" },
 
+  { name: "🔞 18-20", id: "age_18_20", group: "age" },
+  { name: "🪪 21-24", id: "age_21_24", group: "age" },
+  { name: "🎂 25-29", id: "age_25_29", group: "age" },
+  { name: "🍷 30+", id: "age_30_plus", group: "age" },
+
+  { name: "🇬🇧 UK", id: "location_uk", group: "location" },
+  { name: "🇪🇺 Europe", id: "location_europe", group: "location" },
+  { name: "🇺🇸 North America", id: "location_north_america", group: "location" },
+  { name: "🌏 Asia", id: "location_asia", group: "location" },
+  { name: "🌊 Oceania", id: "location_oceania", group: "location" },
+  { name: "🌍 Other", id: "location_other", group: "location" },
+
+  { name: "🎮 Gaming", id: "interest_gaming", group: "interest" },
+  { name: "🎵 Music", id: "interest_music", group: "interest" },
+  { name: "🎬 Movies", id: "interest_movies", group: "interest" },
+  { name: "🍿 Anime", id: "interest_anime", group: "interest" },
+  { name: "⛏️ Minecraft", id: "interest_minecraft", group: "interest" },
+  { name: "🎨 Art", id: "interest_art", group: "interest" }
+];
 module.exports = {
   COLOUR_ROLES,
-  OPTIONAL_PINGS
+  OPTIONAL_PINGS,
+  SELF_ROLES
 };
