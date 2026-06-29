@@ -47,28 +47,39 @@ client.once("ready", () => {
 client.on("interactionCreate", async interaction => {
   try {
     if (interaction.isButton()) {
-      console.log("BUTTON CLICKED:", interaction.customId);
 
-      if (
-        interaction.customId === "verify_member" ||
-        interaction.customId === "verify_button" ||
-        interaction.customId === "verify" ||
-        interaction.customId === "haven_verify"
-      ) {
-        return verifyMember(interaction);
-      }
+  if (
+    interaction.customId === "verify_member" ||
+    interaction.customId === "verify_button" ||
+    interaction.customId === "verify" ||
+    interaction.customId === "haven_verify"
+  ) {
+    return verifyMember(interaction);
+  }
 
-      if (interaction.customId === "open_ticket") {
-        return ticketCommand.execute(interaction);
-      }
+  if (interaction.customId === "open_ticket") {
+    return ticketCommand.execute(interaction);
+  }
 
-      if (interaction.customId.startsWith("colour_")) {
-        return toggleColourRole(interaction);
-      }
+  if (interaction.customId.startsWith("colour_")) {
+    return toggleColourRole(interaction);
+  }
 
-      if (interaction.customId.startsWith("ping_")) {
-        return toggleOptionalPing(interaction);
-      }
+  if (interaction.customId.startsWith("ping_")) {
+    return toggleOptionalPing(interaction);
+  }
+
+  // 👇 ADD THIS HERE
+
+  if (
+    interaction.customId.startsWith("gender_") ||
+    interaction.customId.startsWith("age_") ||
+    interaction.customId.startsWith("location_") ||
+    interaction.customId.startsWith("interest_")
+  ) {
+    return toggleSelfRole(interaction);
+  }
+}
     }
 
     if (interaction.isChatInputCommand()) {
