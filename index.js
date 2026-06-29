@@ -5,6 +5,7 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const banCommand = require("./src/commands/ban");
 const kickCommand = require("./src/commands/kick");
 const timeoutCommand = require("./src/commands/timeout");
 const slowmodeCommand = require("./src/commands/slowmode");
@@ -69,6 +70,7 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "ban") return banCommand.execute(interaction);
       if (interaction.commandName === "kick") return kickCommand.execute(interaction);
       if (interaction.commandName === "timeout") return timeoutCommand.execute(interaction);
       if (interaction.commandName === "slowmode") return slowmodeCommand.execute(interaction);
