@@ -5,6 +5,7 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const setupSelfRoles = require("./src/commands/setupSelfRoles");
 const { toggleSelfRole } = require("./src/buttons/selfRoles");
 
 const banCommand = require("./src/commands/ban");
@@ -46,6 +47,7 @@ client.once("ready", () => {
 
 client.on("interactionCreate", async interaction => {
   try {
+    
     if (interaction.isButton()) {
 
   if (
@@ -83,6 +85,7 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "setup-self-roles") return setupSelfRoles.execute(interaction);
       if (interaction.commandName === "ban") return banCommand.execute(interaction);
       if (interaction.commandName === "kick") return kickCommand.execute(interaction);
       if (interaction.commandName === "timeout") return timeoutCommand.execute(interaction);
