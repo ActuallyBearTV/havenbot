@@ -3,6 +3,28 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [
   new SlashCommandBuilder()
+  .setName("timeout")
+  .setDescription("Timeout a member.")
+  .addUserOption(option =>
+    option
+      .setName("user")
+      .setDescription("The member to timeout")
+      .setRequired(true)
+  )
+  .addStringOption(option =>
+    option
+      .setName("duration")
+      .setDescription("Duration: 10s, 5m, 1h, 1d")
+      .setRequired(true)
+  )
+  .addStringOption(option =>
+    option
+      .setName("reason")
+      .setDescription("Reason for the timeout")
+      .setRequired(false)
+  )
+  .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+  new SlashCommandBuilder()
   .setName("slowmode")
   .setDescription("Set slowmode for this channel.")
   .addIntegerOption(option =>
