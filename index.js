@@ -6,6 +6,7 @@ const {
   PermissionFlagsBits
 } = require("discord.js");
 
+const { sendStaffLog } = require("./src/utils/staffLogs");
 const setupTicketPanel = require("./src/commands/setupTicketPanel");
 const ticketCommand = require("./src/commands/ticket");
 const closeTicketCommand = require("./src/commands/closeTicket");
@@ -99,5 +100,21 @@ if (interaction.isModalSubmit()) {
     });
   }
 });
+client.on("guildMemberAdd", async member => {
+  await sendStaffLog(
+    member.guild,
+    "👤 Member Joined",
+    `${member} joined the server.\n\nAccount created: <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>`,
+    "#22C55E"
+  );
+});
 
+client.on("guildMemberRemove", async member => {
+  await sendStaffLog(
+    member.guild,
+    "👋 Member Left",
+    `${member.user.tag} left the server.`,
+    "#EF4444"
+  );
+});
 client.login(process.env.DISCORD_TOKEN);
