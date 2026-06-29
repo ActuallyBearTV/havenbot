@@ -36,9 +36,13 @@ client.once("ready", () => {
 client.on("interactionCreate", async interaction => {
   try {
     if (interaction.isButton()) {
-  if (interaction.customId === "verify_button") {
-    return verifyMember(interaction);
-  }
+  if (
+  interaction.customId === "verify_button" ||
+  interaction.customId === "verify" ||
+  interaction.customId === "haven_verify"
+) {
+  return verifyMember(interaction);
+}
 
   if (interaction.customId === "open_ticket") {
     return ticketCommand.execute(interaction);
