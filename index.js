@@ -35,6 +35,12 @@ const COLOUR_ROLES = [
   { name: "🖤 Black", hex: "#1F2937", id: "colour_black" }
 ];
 
+const OPTIONAL_PINGS = [
+  { name: "💗 Chat Revive", id: "ping_chat_revive" },
+  { name: "🎙️ VC Revive", id: "ping_vc_revive" },
+  { name: "❓ Daily Question", id: "ping_daily_question" }
+];
+
 function havenEmbed(title, message, color = "#8B5CF6") {
   return new EmbedBuilder()
     .setColor(color)
@@ -65,6 +71,22 @@ async function createColourRoles(guild) {
         hoist: false,
         mentionable: false,
         reason: "Haven colour role setup"
+      });
+    }
+  }
+}
+
+async function createOptionalPingRoles(guild) {
+  for (const ping of OPTIONAL_PINGS) {
+    const existingRole = findRole(guild, ping.name);
+
+    if (!existingRole) {
+      await guild.roles.create({
+        name: ping.name,
+        color: "#F9A8D4",
+        hoist: false,
+        mentionable: true,
+        reason: "Haven optional ping role setup"
       });
     }
   }
@@ -115,6 +137,49 @@ async function postColourRoleMenu(guild) {
   });
 }
 
+async function postOptionalPingMenu(guild) {
+  const channel = findChannel(guild, "🔔・notification-roles");
+
+  if (!channel) {
+    throw new Error("Could not find 🔔・notification-roles channel.");
+  }
+
+  const row = new ActionRowBuilder();
+
+  OPTIONAL_PINGS.forEach(ping => {
+    row.addComponents(
+      new ButtonBuilder()
+        .setCustomId(ping.id)
+        .setLabel(ping.name)
+        .setStyle(ButtonStyle.Secondary)
+    );
+  });
+
+  await channel.send({
+    embeds: [
+      havenEmbed(
+        "Optional Pings ♡₊˚",
+        [
+          "Choose which notifications you'd like to receive!",
+          "",
+          "💗 **Chat Revive**",
+          "Be notified when we're trying to get chat active again.",
+          "",
+          "🎙️ **VC Revive**",
+          "Get pinged whenever people are looking to start a voice chat.",
+          "",
+          "❓ **Daily Question**",
+          "Receive a daily conversation starter to join in with the community.",
+          "",
+          "You can enable or disable these at any time by clicking the buttons below."
+        ].join("\n"),
+        "#F9A8D4"
+      )
+    ],
+    components: [row]
+  });
+}
+
 async function toggleColourRole(interaction) {
   const selectedColour = COLOUR_ROLES.find(colour => colour.id === interaction.customId);
 
@@ -159,6 +224,37 @@ async function toggleColourRole(interaction) {
   });
 }
 
+async function toggleOptionalPing(interaction) {
+  const selectedPing = OPTIONAL_PINGS.find(ping => ping.id === interaction.customId);
+
+  if (!selectedPing) return;
+
+  const selectedRole = findRole(interaction.guild, selectedPing.name);
+
+  if (!selectedRole) {
+    return interaction.reply({
+      content: "That notification role does not exist yet. Ask staff to run `/setup-optional-pings`.",
+      ephemeral: true
+    });
+  }
+
+  if (interaction.member.roles.cache.has(selectedRole.id)) {
+    await interaction.member.roles.remove(selectedRole);
+
+    return interaction.reply({
+      content: `Removed ${selectedPing.name}.`,
+      ephemeral: true
+    });
+  }
+
+  await interaction.member.roles.add(selectedRole);
+
+  return interaction.reply({
+    content: `Added ${selectedPing.name}.`,
+    ephemeral: true
+  });
+}
+
 client.once("ready", () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 });
@@ -168,6 +264,10 @@ client.on("interactionCreate", async interaction => {
     if (interaction.isButton()) {
       if (interaction.customId.startsWith("colour_")) {
         return toggleColourRole(interaction);
+      }
+
+      if (interaction.customId.startsWith("ping_")) {
+        return toggleOptionalPing(interaction);
       }
     }
 
@@ -190,6 +290,28 @@ client.on("interactionCreate", async interaction => {
 
         return interaction.followUp({
           content: "Colour roles are ready.",
+          ephemeral: true
+        });
+      }
+
+      if (interaction.commandName === "setup-optional-pings") {
+        if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
+          return interaction.reply({
+            content: "You need Administrator permission to use this command.",
+            ephemeral: true
+          });
+        }
+
+        await interaction.reply({
+          content: "Setting up optional pings...",
+          ephemeral: true
+        });
+
+        await createOptionalPingRoles(interaction.guild);
+        await postOptionalPingMenu(interaction.guild);
+
+        return interaction.followUp({
+          content: "Optional ping roles are ready.",
           ephemeral: true
         });
       }
