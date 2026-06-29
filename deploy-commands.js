@@ -2,6 +2,7 @@ require("dotenv").config();
 const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 
 const commands = [
+  new SlashCommandBuilder().setName("setup-ticket-panel").setDescription("Post the Haven ticket panel.").setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
   new SlashCommandBuilder().setName("install-haven").setDescription("Install Haven server setup.").setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
   new SlashCommandBuilder().setName("setup-colour-roles").setDescription("Create colour roles and button menu.").setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
   new SlashCommandBuilder().setName("setup-optional-pings").setDescription("Create optional ping roles and menu.").setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
