@@ -1,7 +1,23 @@
 require("dotenv").config();
 const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 
-const commands = [
+const commands = [ 
+  new SlashCommandBuilder()
+  .setName("kick")
+  .setDescription("Kick a member from the server.")
+  .addUserOption(option =>
+    option
+      .setName("user")
+      .setDescription("The member to kick")
+      .setRequired(true)
+  )
+  .addStringOption(option =>
+    option
+      .setName("reason")
+      .setDescription("Reason for the kick")
+      .setRequired(false)
+  )
+  .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
   new SlashCommandBuilder()
   .setName("timeout")
   .setDescription("Timeout a member.")
