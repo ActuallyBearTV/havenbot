@@ -5,6 +5,7 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const lockCommand = require("./src/commands/lock");
 const purgeCommand = require("./src/commands/purge");
 const { verifyMember } = require("./src/buttons/verify");
 const { sendWelcome } = require("./src/features/welcome");
@@ -69,6 +70,9 @@ client.on("interactionCreate", async interaction => {
       if (interaction.commandName === "close-ticket") return closeTicketCommand.execute(interaction);
       if (interaction.commandName === "setup-ticket-panel") return setupTicketPanel.execute(interaction);
       if (interaction.commandName === "purge") return purgeCommand.execute(interaction);
+      if (interaction.commandName === "lock") {
+  return lockCommand.execute(interaction);
+}
 
       return interaction.reply({
         content: "This command is installed, but this feature has not been connected yet.",
