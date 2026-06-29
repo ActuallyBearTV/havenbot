@@ -12,6 +12,7 @@ const {
   ButtonStyle
 } = require("discord.js");
 
+const postCustom = require("./src/commands/postCustom");
 const setupOptionalPings = require("./src/commands/setupOptionalPings");
 const { havenEmbed } = require("./src/utils/embed");
 const { findChannel, findRole } = require("./src/utils/finders");
@@ -49,13 +50,7 @@ if (interaction.commandName === "setup-optional-pings") {
     return setupOptionalPings.execute(interaction);
 }
 
-      if (interaction.commandName === "post-custom") {
-        if (!interaction.memberPermissions.has(PermissionFlagsBits.ManageMessages)) {
-          return interaction.reply({
-            content: "You need Manage Messages permission to use this command.",
-            ephemeral: true
-          });
-        }
+      
 
         const modal = new ModalBuilder()
           .setCustomId("haven_custom_announcement_modal")
