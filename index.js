@@ -12,6 +12,7 @@ const {
   ButtonStyle
 } = require("discord.js");
 
+const setupOptionalPings = require("./src/commands/setupOptionalPings");
 const { havenEmbed } = require("./src/utils/embed");
 const { findChannel, findRole } = require("./src/utils/finders");
 const { COLOUR_ROLES, OPTIONAL_PINGS } = require("./src/config/constants");
@@ -23,65 +24,6 @@ const setupColourRoles = require("./src/commands/setupColourRoles");
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
 });
-
-async function createOptionalPingRoles(guild) {
-  for (const ping of OPTIONAL_PINGS) {
-    const existingRole = findRole(guild, ping.name);
-
-    if (!existingRole) {
-      await guild.roles.create({
-        name: ping.name,
-        color: "#F9A8D4",
-        hoist: false,
-        mentionable: true,
-        reason: "Haven optional ping role setup"
-      });
-    }
-  }
-}
-
-async function postOptionalPingMenu(guild) {
-  const channel = findChannel(guild, "🔔・notification-roles");
-
-  if (!channel) {
-    throw new Error("Could not find 🔔・notification-roles channel.");
-  }
-
-  const row = new ActionRowBuilder();
-
-  OPTIONAL_PINGS.forEach(ping => {
-    row.addComponents(
-      new ButtonBuilder()
-        .setCustomId(ping.id)
-        .setLabel(ping.name)
-        .setStyle(ButtonStyle.Secondary)
-    );
-  });
-
-  await channel.send({
-    embeds: [
-      havenEmbed(
-        "Optional Pings ♡₊˚",
-        [
-          "Choose which notifications you'd like to receive!",
-          "",
-          "💗 **Chat Revive**",
-          "Be notified when we're trying to get chat active again.",
-          "",
-          "🎙️ **VC Revive**",
-          "Get pinged whenever people are looking to start a voice chat.",
-          "",
-          "❓ **Daily Question**",
-          "Receive a daily conversation starter to join in with the community.",
-          "",
-          "You can enable or disable these at any time by clicking the buttons below."
-        ].join("\n"),
-        "#F9A8D4"
-      )
-    ],
-    components: [row]
-  });
-}
 
 client.once("ready", () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
@@ -103,28 +45,9 @@ client.on("interactionCreate", async interaction => {
       if (interaction.commandName === "setup-colour-roles") {
         return setupColourRoles.execute(interaction);
       }
-
-      if (interaction.commandName === "setup-optional-pings") {
-        if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
-          return interaction.reply({
-            content: "You need Administrator permission to use this command.",
-            ephemeral: true
-          });
-        }
-
-        await interaction.reply({
-          content: "Setting up optional pings...",
-          ephemeral: true
-        });
-
-        await createOptionalPingRoles(interaction.guild);
-        await postOptionalPingMenu(interaction.guild);
-
-        return interaction.followUp({
-          content: "Optional ping roles are ready.",
-          ephemeral: true
-        });
-      }
+if (interaction.commandName === "setup-optional-pings") {
+    return setupOptionalPings.execute(interaction);
+}
 
       if (interaction.commandName === "post-custom") {
         if (!interaction.memberPermissions.has(PermissionFlagsBits.ManageMessages)) {
