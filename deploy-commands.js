@@ -3,6 +3,10 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+  .setName("setup-self-roles")
+  .setDescription("Post the gender, age, location, and interest role panels.")
+  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+  new SlashCommandBuilder()
   .setName("ban")
   .setDescription("Ban a member from the server.")
   .addUserOption(option =>
