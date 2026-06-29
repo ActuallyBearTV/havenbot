@@ -101,6 +101,8 @@ if (interaction.isModalSubmit()) {
   }
 });
 client.on("guildMemberAdd", async member => {
+  console.log(`✅ JOIN EVENT: ${member.user.tag}`);
+
   await sendStaffLog(
     member.guild,
     "👤 Member Joined",
