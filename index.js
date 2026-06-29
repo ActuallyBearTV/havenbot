@@ -10,13 +10,16 @@ const slowmodeCommand = require("./src/commands/slowmode");
 const unlockCommand = require("./src/commands/unlock");
 const lockCommand = require("./src/commands/lock");
 const purgeCommand = require("./src/commands/purge");
+
 const { verifyMember } = require("./src/buttons/verify");
 const { sendWelcome } = require("./src/features/welcome");
 const { sendStaffLog } = require("./src/utils/staffLogs");
+
 const setupTicketPanel = require("./src/commands/setupTicketPanel");
 const ticketCommand = require("./src/commands/ticket");
 const closeTicketCommand = require("./src/commands/closeTicket");
 const customAnnouncementModal = require("./src/modals/customAnnouncement");
+
 const { toggleColourRole } = require("./src/buttons/colourRoles");
 const { toggleOptionalPing } = require("./src/buttons/optionalPings");
 
@@ -64,16 +67,13 @@ client.on("interactionCreate", async interaction => {
       }
     }
 
-    if (interaction.isChatInputCommand()) 
-      if (interaction.commandName === "timeout") {
-  return timeoutCommand.execute(interaction);
-}
-      if (interaction.commandName === "slowmode") {
-  return slowmodeCommand.execute(interaction);
-}
-      if (interaction.commandName === "unlock") {
-    return unlockCommand.execute(interaction);
-}
+    if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "timeout") return timeoutCommand.execute(interaction);
+      if (interaction.commandName === "slowmode") return slowmodeCommand.execute(interaction);
+      if (interaction.commandName === "unlock") return unlockCommand.execute(interaction);
+      if (interaction.commandName === "lock") return lockCommand.execute(interaction);
+      if (interaction.commandName === "purge") return purgeCommand.execute(interaction);
+
       if (interaction.commandName === "setup-colour-roles") return setupColourRoles.execute(interaction);
       if (interaction.commandName === "setup-optional-pings") return setupOptionalPings.execute(interaction);
       if (interaction.commandName === "post-custom") return postCustom.execute(interaction);
@@ -81,10 +81,6 @@ client.on("interactionCreate", async interaction => {
       if (interaction.commandName === "ticket") return ticketCommand.execute(interaction);
       if (interaction.commandName === "close-ticket") return closeTicketCommand.execute(interaction);
       if (interaction.commandName === "setup-ticket-panel") return setupTicketPanel.execute(interaction);
-      if (interaction.commandName === "purge") return purgeCommand.execute(interaction);
-      if (interaction.commandName === "lock") {
-  return lockCommand.execute(interaction);
-}
 
       return interaction.reply({
         content: "This command is installed, but this feature has not been connected yet.",
@@ -113,6 +109,7 @@ client.on("interactionCreate", async interaction => {
     });
   }
 });
+
 client.on("guildMemberAdd", async member => {
   console.log(`✅ JOIN EVENT: ${member.user.tag}`);
 
