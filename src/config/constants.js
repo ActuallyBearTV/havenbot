@@ -21,26 +21,27 @@ const OPTIONAL_PINGS = [
 const SELF_ROLES = [
   { name: "♂️ Male", id: "gender_male", group: "gender" },
   { name: "♀️ Female", id: "gender_female", group: "gender" },
-  { name: "⚧️ Non-Binary", id: "gender_non_binary", group: "gender" },
+  { name: "⚧ Other", id: "gender_other", group: "gender" },
 
-  { name: "🔞 18-20", id: "age_18_20", group: "age" },
-  { name: "🪪 21-24", id: "age_21_24", group: "age" },
-  { name: "🎂 25-29", id: "age_25_29", group: "age" },
-  { name: "🍷 30+", id: "age_30_plus", group: "age" },
+  { name: "18+", id: "age_18plus", group: "age" },
+  { name: "19-21", id: "age_19_21", group: "age" },
+  { name: "22-25", id: "age_22_25", group: "age" },
+  { name: "26-30", id: "age_26_30", group: "age" },
+  { name: "30+", id: "age_30plus", group: "age" },
 
-  { name: "🇬🇧 UK", id: "location_uk", group: "location" },
-  { name: "🇪🇺 Europe", id: "location_europe", group: "location" },
-  { name: "🇺🇸 North America", id: "location_north_america", group: "location" },
-  { name: "🌏 Asia", id: "location_asia", group: "location" },
-  { name: "🌊 Oceania", id: "location_oceania", group: "location" },
-  { name: "🌍 Other", id: "location_other", group: "location" },
+  { name: "🇬🇧 United Kingdom", id: "location_uk", group: "location" },
+  { name: "🇺🇸 United States", id: "location_us", group: "location" },
+  { name: "🇪🇺 Europe", id: "location_eu", group: "location" },
+  { name: "🌍 Other Location", id: "location_other", group: "location" },
 
-  { name: "🎮 Gaming", id: "interest_gaming", group: "interest" },
-  { name: "🎵 Music", id: "interest_music", group: "interest" },
-  { name: "🎬 Movies", id: "interest_movies", group: "interest" },
-  { name: "🍿 Anime", id: "interest_anime", group: "interest" },
-  { name: "⛏️ Minecraft", id: "interest_minecraft", group: "interest" },
-  { name: "🎨 Art", id: "interest_art", group: "interest" }
+  { name: "🎮 Gamer", id: "interest_gamer", group: "interest" },
+  { name: "🎵 Music Lover", id: "interest_music", group: "interest" },
+  { name: "🎬 Movie Lover", id: "interest_movie", group: "interest" },
+  { name: "📺 Anime Fan", id: "interest_anime", group: "interest" },
+  { name: "🐶 Pet Lover", id: "interest_pet", group: "interest" },
+  { name: "💻 Tech Enthusiast", id: "interest_tech", group: "interest" },
+  { name: "🎨 Creative", id: "interest_creative", group: "interest" },
+  { name: "🌙 Night Owl", id: "interest_nightowl", group: "interest" }
 ];
 module.exports = {
   COLOUR_ROLES,
