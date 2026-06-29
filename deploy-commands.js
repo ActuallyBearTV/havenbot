@@ -3,6 +3,18 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [
   new SlashCommandBuilder()
+  .setName("slowmode")
+  .setDescription("Set slowmode for this channel.")
+  .addIntegerOption(option =>
+    option
+      .setName("seconds")
+      .setDescription("Slowmode in seconds. Use 0 to disable.")
+      .setRequired(true)
+      .setMinValue(0)
+      .setMaxValue(21600)
+  )
+  .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
+  new SlashCommandBuilder()
     .setName("unlock")
     .setDescription("Unlock this channel.")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
