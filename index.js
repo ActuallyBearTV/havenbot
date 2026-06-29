@@ -58,7 +58,7 @@ client.on("interactionCreate", async interaction => {
       ephemeral: true
     });
   }
-});
+
     if (interaction.isModalSubmit()) {
       if (interaction.customId === customAnnouncementModal.customId) {
         return customAnnouncementModal.execute(interaction);
