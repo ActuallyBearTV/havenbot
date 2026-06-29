@@ -1,6 +1,15 @@
 require("dotenv").config();
 
-const { Client, GatewayIntentBits } = require("discord.js");
+const {
+  Client,
+  GatewayIntentBits,
+  PermissionFlagsBits,
+  EmbedBuilder,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  ActionRowBuilder
+} = require("discord.js");
 
 const client = new Client({
   intents: [
@@ -9,26 +18,100 @@ const client = new Client({
   ]
 });
 
+function havenEmbed(title, message) {
+  return new EmbedBuilder()
+    .setColor("#8B5CF6")
+    .setTitle(title)
+    .setDescription(message)
+    .setFooter({ text: "Haven • A community to belong" })
+    .setTimestamp();
+}
+
 client.once("ready", () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
 client.on("interactionCreate", async interaction => {
-  if (!interaction.isChatInputCommand()) return;
+  try {
+    if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "post-custom") {
+        if (!interaction.memberPermissions.has(PermissionFlagsBits.ManageMessages)) {
+          return interaction.reply({
+            content: "You need Manage Messages permission to use this command.",
+            ephemeral: true
+          });
+        }
 
-  switch (interaction.commandName) {
-    case "verify":
-      await interaction.reply({
-        content: "✅ Haven Bot is online!",
+        const modal = new ModalBuilder()
+          .setCustomId("haven_custom_announcement_modal")
+          .setTitle("Haven Announcement");
+
+        const titleInput = new TextInputBuilder()
+          .setCustomId("announcement_title")
+          .setLabel("Announcement Title")
+          .setPlaceholder("Example: Colour Roles Are Live!")
+          .setStyle(TextInputStyle.Short)
+          .setRequired(true)
+          .setMaxLength(100);
+
+        const messageInput = new TextInputBuilder()
+          .setCustomId("announcement_message")
+          .setLabel("Announcement Message")
+          .setPlaceholder("Type what you want the bot to say...")
+          .setStyle(TextInputStyle.Paragraph)
+          .setRequired(true)
+          .setMaxLength(4000);
+
+        modal.addComponents(
+          new ActionRowBuilder().addComponents(titleInput),
+          new ActionRowBuilder().addComponents(messageInput)
+        );
+
+        return interaction.showModal(modal);
+      }
+
+      if (interaction.commandName === "verify") {
+        return interaction.reply({
+          content: "✅ Haven Bot is online and working!",
+          ephemeral: true
+        });
+      }
+
+      return interaction.reply({
+        content: "This command is installed, but this feature has not been connected yet.",
         ephemeral: true
       });
-      break;
+    }
 
-    default:
-      await interaction.reply({
-        content: "This command is installed but hasn't been connected yet.",
+    if (interaction.isModalSubmit()) {
+      if (interaction.customId !== "haven_custom_announcement_modal") return;
+
+      const title = interaction.fields.getTextInputValue("announcement_title");
+      const message = interaction.fields.getTextInputValue("announcement_message");
+
+      await interaction.channel.send({
+        embeds: [havenEmbed(`📢 ${title}`, message)]
+      });
+
+      return interaction.reply({
+        content: "Announcement posted.",
         ephemeral: true
       });
+    }
+  } catch (error) {
+    console.error(error);
+
+    if (interaction.replied || interaction.deferred) {
+      return interaction.followUp({
+        content: "Something went wrong. Check the bot logs.",
+        ephemeral: true
+      });
+    }
+
+    return interaction.reply({
+      content: "Something went wrong. Check the bot logs.",
+      ephemeral: true
+    });
   }
 });
 
