@@ -4,7 +4,6 @@ const {
   Client,
   GatewayIntentBits,
   PermissionFlagsBits,
-  EmbedBuilder,
   ModalBuilder,
   TextInputBuilder,
   TextInputStyle,
@@ -13,6 +12,7 @@ const {
   ButtonStyle
 } = require("discord.js");
 
+const { havenEmbed } = require("./src/utils/embed");
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -39,16 +39,6 @@ const OPTIONAL_PINGS = [
   { name: "💗 Chat Revive", id: "ping_chat_revive" },
   { name: "🎙️ VC Revive", id: "ping_vc_revive" },
   { name: "❓ Daily Question", id: "ping_daily_question" }
-];
-
-function havenEmbed(title, message, color = "#8B5CF6") {
-  return new EmbedBuilder()
-    .setColor(color)
-    .setTitle(title)
-    .setDescription(message)
-    .setFooter({ text: "Haven • A community to belong" })
-    .setTimestamp();
-}
 
 function findChannel(guild, name) {
   return guild.channels.cache.find(channel =>
