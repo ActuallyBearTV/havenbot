@@ -3,8 +3,8 @@ const { findChannel } = require("../utils/finders");
 
 async function sendWelcome(member) {
   const channel =
-    findChannel(member.guild, "👋・welcome") ||
-    findChannel(member.guild, "welcome");
+  findChannel(member.guild, "💬・general") ||
+  findChannel(member.guild, "general");
 
   if (!channel) {
     console.log("❌ Welcome channel not found.");
