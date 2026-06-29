@@ -4,8 +4,9 @@
   "description": "Professional modular Discord bot for Haven",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "deploy": "node src/deploy-commands.js",
+    "main": "index.js",
+    "start": "node index.js",
+    "deploy": "node deploy-commands.js"
     "dev": "node src/index.js"
   },
   "dependencies": {
