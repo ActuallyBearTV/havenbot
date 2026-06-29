@@ -5,6 +5,7 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const kickCommand = require("./src/commands/kick");
 const timeoutCommand = require("./src/commands/timeout");
 const slowmodeCommand = require("./src/commands/slowmode");
 const unlockCommand = require("./src/commands/unlock");
@@ -68,6 +69,7 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "kick") return kickCommand.execute(interaction);
       if (interaction.commandName === "timeout") return timeoutCommand.execute(interaction);
       if (interaction.commandName === "slowmode") return slowmodeCommand.execute(interaction);
       if (interaction.commandName === "unlock") return unlockCommand.execute(interaction);
