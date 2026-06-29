@@ -5,6 +5,7 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const purgeCommand = require("./src/commands/purge");
 const { verifyMember } = require("./src/buttons/verify");
 const { sendWelcome } = require("./src/features/welcome");
 const { sendStaffLog } = require("./src/utils/staffLogs");
@@ -85,14 +86,17 @@ client.on("interactionCreate", async interaction => {
       }
 
       if (interaction.commandName === "setup-ticket-panel") {
-        return setupTicketPanel.execute(interaction);
-      }
+  return setupTicketPanel.execute(interaction);
+}
 
-      return interaction.reply({
-        content: "This command is installed, but this feature has not been connected yet.",
-        ephemeral: true
-      });
-    }
+if (interaction.commandName === "purge") {
+  return purgeCommand.execute(interaction);
+}
+
+return interaction.reply({
+  content: "This command is installed, but this feature has not been connected yet.",
+  ephemeral: true
+});
 
     if (interaction.isModalSubmit()) {
       if (interaction.customId === customAnnouncementModal.customId) {
