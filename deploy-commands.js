@@ -3,6 +3,30 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+  .setName("ban")
+  .setDescription("Ban a member from the server.")
+  .addUserOption(option =>
+    option
+      .setName("user")
+      .setDescription("The member to ban")
+      .setRequired(true)
+  )
+  .addStringOption(option =>
+    option
+      .setName("reason")
+      .setDescription("Reason for the ban")
+      .setRequired(false)
+  )
+  .addIntegerOption(option =>
+    option
+      .setName("delete-days")
+      .setDescription("Delete their messages from the last 0-7 days")
+      .setRequired(false)
+      .setMinValue(0)
+      .setMaxValue(7)
+  )
+  .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
+  new SlashCommandBuilder()
   .setName("kick")
   .setDescription("Kick a member from the server.")
   .addUserOption(option =>
