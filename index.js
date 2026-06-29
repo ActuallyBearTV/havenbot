@@ -5,6 +5,7 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const { sendWelcome } = require("./src/features/welcome");
 const { sendStaffLog } = require("./src/utils/staffLogs");
 const setupTicketPanel = require("./src/commands/setupTicketPanel");
 const ticketCommand = require("./src/commands/ticket");
@@ -109,6 +110,8 @@ client.on("guildMemberAdd", async member => {
     `${member} joined the server.\n\nAccount created: <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>`,
     "#22C55E"
   );
+
+  await sendWelcome(member);
 });
 
 client.on("guildMemberRemove", async member => {
