@@ -1,18 +1,8 @@
 {
-  "name": "havenbot-pro",
-  "version": "1.0.0",
-  "description": "Professional modular Discord bot for Haven",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "deploy": "node src/deploy-commands.js",
-    "dev": "node src/index.js"
-  },
-  "dependencies": {
-    "discord.js": "^14.16.3",
-    "dotenv": "^16.4.5"
-  },
-  "engines": {
-    "node": ">=20"
+    "start": "node index.js",
+    "deploy": "node deploy-commands.js",
+    "dev": "node index.js"
   }
 }
