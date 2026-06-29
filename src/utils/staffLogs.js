@@ -10,10 +10,14 @@ async function sendStaffLog(guild, options) {
   if (!channel) return;
 
   const embed = new EmbedBuilder()
-    .setColor(options.color || "#2b6cff")
-    .setTitle(options.title || "Staff Log")
-    .setDescription(options.description || "No details provided.")
-    .setTimestamp();
+  .setColor(options.color || "#2b6cff")
+  .setTitle(options.title || "Staff Log")
+  .setDescription(options.description || "No details provided.")
+  .setTimestamp();
+
+if (options.user) {
+  embed.setThumbnail(options.user.displayAvatarURL({ dynamic: true }));
+}
 
   if (options.user) {
     embed.addFields({
