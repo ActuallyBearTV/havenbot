@@ -52,43 +52,6 @@ async function createOptionalPingRoles(guild) {
 }
 
 
-  const rows = [];
-  let currentRow = new ActionRowBuilder();
-
-  COLOUR_ROLES.forEach((colour, index) => {
-    if (index > 0 && index % 4 === 0) {
-      rows.push(currentRow);
-      currentRow = new ActionRowBuilder();
-    }
-
-    currentRow.addComponents(
-      new ButtonBuilder()
-        .setCustomId(colour.id)
-        .setLabel(colour.name)
-        .setStyle(ButtonStyle.Secondary)
-    );
-  });
-
-  rows.push(currentRow);
-
-  await channel.send({
-    embeds: [
-      havenEmbed(
-        "🎨 Choose Your Colour",
-        [
-          "Personalise your name with your favourite colour!",
-          "",
-          "Click a button below to choose your colour role.",
-          "",
-          "You can only have **one colour role** at a time.",
-          "Choosing a new colour will remove your old one."
-        ].join("\n"),
-        "#8B5CF6"
-      )
-    ],
-    components: rows
-  });
-}
 
 async function postOptionalPingMenu(guild) {
   const channel = findChannel(guild, "🔔・notification-roles");
