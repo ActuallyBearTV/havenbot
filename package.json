@@ -1,14 +1,18 @@
 {
-  "name": "haven-combined-bot",
-  "version": "3.0.0",
-  "description": "Combined Haven Discord bot",
-  "main": "index.js",
+  "name": "havenbot-pro",
+  "version": "1.0.0",
+  "description": "Professional modular Discord bot for Haven",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js",
-    "deploy": "node deploy-commands.js"
+    "start": "node src/index.js",
+    "deploy": "node src/deploy-commands.js",
+    "dev": "node src/index.js"
   },
   "dependencies": {
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

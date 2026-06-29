@@ -1,24 +1,35 @@
-# Haven Combined Bot V3
+# HavenBot Pro
 
-This is the single combined Haven bot.
+A modular Discord community bot built for Haven.
 
-## Features
-- Full server setup
-- Verification button
-- Tickets
-- Colour roles
-- Optional pings
-- Custom announcement popup/modal
-- Default update announcement
-- Chat revive / VC revive / Daily question
-- Simple giveaway command
-- Timeout command
+## Current Features
 
-## Setup
+- `/install-haven` server setup
+- `/setup-colour-roles`
+- `/setup-optional-pings`
+- `/post-custom` popup form announcement
+- `/post-update`
+- `/verify`
+- `/ticket`
+- `/close-ticket`
+- `/revive-chat`
+- `/revive-vc`
+- `/daily-question`
+- `/giveaway`
+- `/timeout-user`
 
-1. Extract this folder.
-2. Copy your old `.env` into this folder, or rename `.env.example` to `.env`.
-3. Run:
+## Project Structure
+
+```text
+src/
+  commands/
+  events/
+  features/
+  utils/
+  config/
+```
+
+## Local Setup
 
 ```bash
 npm install
@@ -26,12 +37,32 @@ npm run deploy
 npm start
 ```
 
-4. In Discord run:
+## Railway Setup
 
-```text
-/install-haven
-/setup-colour-roles
-/setup-optional-pings
+1. Upload this project to GitHub.
+2. Deploy the GitHub repository on Railway.
+3. Add environment variables:
+
+```env
+DISCORD_TOKEN=your_token
+CLIENT_ID=your_application_id
+GUILD_ID=your_server_id
 ```
 
-Only run this one bot folder. Stop the older bot folders with `Ctrl + C`.
+4. Railway start command should be:
+
+```bash
+npm start
+```
+
+5. Run slash command deploy once locally or in Railway shell:
+
+```bash
+npm run deploy
+```
+
+## Important
+
+Do not upload `.env` to GitHub.
+
+Only run one copy of the bot at once.
