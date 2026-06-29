@@ -84,16 +84,16 @@ client.on("interactionCreate", async interaction => {
 }
     }
 
-    if (interaction.isChatInputCommand()) {
-      if (interaction.commandName === "setup-self-roles") return setupSelfRoles.execute(interaction);
-      if (interaction.commandName === "ban") return banCommand.execute(interaction);
-      if (interaction.commandName === "kick") return kickCommand.execute(interaction);
-      if (interaction.commandName === "timeout") return timeoutCommand.execute(interaction);
-      if (interaction.commandName === "slowmode") return slowmodeCommand.execute(interaction);
-      if (interaction.commandName === "unlock") return unlockCommand.execute(interaction);
-      if (interaction.commandName === "lock") return lockCommand.execute(interaction);
-      if (interaction.commandName === "purge") return purgeCommand.execute(interaction);
+   if (interaction.isChatInputCommand()) {
+  if (interaction.commandName === "setup-self-roles") return setupSelfRoles.execute(interaction);
 
+  if (interaction.commandName === "ban") return banCommand.execute(interaction);
+  if (interaction.commandName === "kick") return kickCommand.execute(interaction);
+  if (interaction.commandName === "timeout") return timeoutCommand.execute(interaction);
+  if (interaction.commandName === "slowmode") return slowmodeCommand.execute(interaction);
+  if (interaction.commandName === "unlock") return unlockCommand.execute(interaction);
+  if (interaction.commandName === "lock") return lockCommand.execute(interaction);
+  if (interaction.commandName === "purge") return purgeCommand.execute(interaction);
       if (interaction.commandName === "setup-colour-roles") return setupColourRoles.execute(interaction);
       if (interaction.commandName === "setup-optional-pings") return setupOptionalPings.execute(interaction);
       if (interaction.commandName === "post-custom") return postCustom.execute(interaction);
