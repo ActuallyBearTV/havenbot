@@ -1,12 +1,10 @@
 require("dotenv").config();
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildPresences
-  ]
-});
+const {
+  Client,
+  GatewayIntentBits
+} = require("discord.js");
+
 const { sendStaffLog } = require("./src/utils/staffLogs");
 const setupTicketPanel = require("./src/commands/setupTicketPanel");
 const ticketCommand = require("./src/commands/ticket");
@@ -24,7 +22,8 @@ const postCustom = require("./src/commands/postCustom");
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildPresences
   ]
 });
 
