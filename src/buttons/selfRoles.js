@@ -4,7 +4,12 @@ const { findRole } = require("../utils/finders");
 async function toggleSelfRole(interaction) {
   const selected = SELF_ROLES.find(role => role.id === interaction.customId);
 
-  if (!selected) return;
+  if (!selected) {
+  return interaction.reply({
+    content: "❌ This role button is outdated. Ask staff to repost the role panel.",
+    ephemeral: true
+  });
+}
 
   const role = findRole(interaction.guild, selected.name);
 
