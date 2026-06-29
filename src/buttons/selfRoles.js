@@ -1,46 +1,33 @@
-const roleGroups = {
-  gender: ["Male", "Female", "Non-Binary"],
-  age: ["18-20", "21-24", "25-29", "30+"],
-  location: ["UK", "Europe", "North America", "Asia", "Oceania", "Other"],
-  interest: ["Gaming", "Music", "Movies", "Anime", "Minecraft", "Art"]
-};
+const { SELF_ROLES } = require("../config/constants");
+const { findRole } = require("../utils/finders");
 
 async function toggleSelfRole(interaction) {
-  const [group, ...roleParts] = interaction.customId.split("_");
-  const roleName = roleParts.join(" ");
+  const selected = SELF_ROLES.find(role => role.id === interaction.customId);
 
-  const allowedRoles = roleGroups[group];
+  if (!selected) return;
 
-  if (!allowedRoles) {
-    return interaction.reply({
-      content: "❌ Unknown role group.",
-      ephemeral: true
-    });
-  }
-
-  const role = interaction.guild.roles.cache.find(r => r.name === roleName);
+  const role = findRole(interaction.guild, selected.name);
 
   if (!role) {
     return interaction.reply({
-      content: `❌ I couldn't find the **${roleName}** role.`,
+      content: `❌ I couldn't find the **${selected.name}** role.`,
       ephemeral: true
     });
   }
 
-  const member = interaction.member;
-
   const singleChoiceGroups = ["gender", "age", "location"];
 
-  if (singleChoiceGroups.includes(group)) {
-    const rolesToRemove = allowedRoles
-      .map(name => interaction.guild.roles.cache.find(r => r.name === name))
+  if (singleChoiceGroups.includes(selected.group)) {
+    const rolesToRemove = SELF_ROLES
+      .filter(item => item.group === selected.group)
+      .map(item => findRole(interaction.guild, item.name))
       .filter(Boolean);
 
-    await member.roles.remove(rolesToRemove).catch(() => null);
+    await interaction.member.roles.remove(rolesToRemove).catch(() => null);
   }
 
-  if (member.roles.cache.has(role.id)) {
-    await member.roles.remove(role);
+  if (interaction.member.roles.cache.has(role.id)) {
+    await interaction.member.roles.remove(role);
 
     return interaction.reply({
       content: `❌ Removed **${role.name}**.`,
@@ -48,7 +35,7 @@ async function toggleSelfRole(interaction) {
     });
   }
 
-  await member.roles.add(role);
+  await interaction.member.roles.add(role);
 
   return interaction.reply({
     content: `✅ Added **${role.name}**.`,
