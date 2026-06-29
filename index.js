@@ -5,6 +5,7 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const unlockCommand = require("./src/commands/unlock");
 const lockCommand = require("./src/commands/lock");
 const purgeCommand = require("./src/commands/purge");
 const { verifyMember } = require("./src/buttons/verify");
@@ -62,6 +63,9 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "unlock") {
+    return unlockCommand.execute(interaction);
+}
       if (interaction.commandName === "setup-colour-roles") return setupColourRoles.execute(interaction);
       if (interaction.commandName === "setup-optional-pings") return setupOptionalPings.execute(interaction);
       if (interaction.commandName === "post-custom") return postCustom.execute(interaction);
