@@ -21,13 +21,15 @@ async function verifyMember(interaction) {
   await interaction.member.roles.add(role);
 
 await sendStaffLog(interaction.guild, {
-    title: "✅ Member Verified",
-    description: `${interaction.user} has successfully verified.`,
-    user: interaction.user,
-    extra:
-        `**Account Created:** <t:${Math.floor(interaction.user.createdTimestamp / 1000)}:R>\n` +
-        `**Joined Server:** <t:${Math.floor(interaction.member.joinedTimestamp / 1000)}:R>`,
-    color: "#57F287"
+  title: "✅ Member Verified",
+  description: `${interaction.user} has successfully verified.`,
+  user: interaction.user,
+  extra:
+    `📅 **Account Created:** <t:${Math.floor(interaction.user.createdTimestamp / 1000)}:F>\n` +
+    `⏳ **Account Age:** <t:${Math.floor(interaction.user.createdTimestamp / 1000)}:R>\n` +
+    `📥 **Joined Server:** <t:${Math.floor(interaction.member.joinedTimestamp / 1000)}:F>\n` +
+    `⏱️ **Time in Server:** <t:${Math.floor(interaction.member.joinedTimestamp / 1000)}:R>`,
+  color: "#57F287"
 });
 return interaction.reply({
   content: "🎉 Welcome to Haven! You have been verified.",
