@@ -3,6 +3,16 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+  .setName("removewarn")
+  .setDescription("Remove a specific warning from a member.")
+  .addUserOption(option =>
+    option.setName("user").setDescription("The member").setRequired(true)
+  )
+  .addStringOption(option =>
+    option.setName("warning-id").setDescription("The warning ID to remove").setRequired(true)
+  )
+  .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+  new SlashCommandBuilder()
   .setName("warnings")
   .setDescription("View a member's warnings.")
   .addUserOption(option =>
