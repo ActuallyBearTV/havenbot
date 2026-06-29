@@ -6,6 +6,7 @@ const {
   PermissionFlagsBits
 } = require("discord.js");
 
+const setupTicketPanel = require("./src/commands/setupTicketPanel");
 const ticketCommand = require("./src/commands/ticket");
 const closeTicketCommand = require("./src/commands/closeTicket");
 const customAnnouncementModal = require("./src/modals/customAnnouncement");
@@ -63,6 +64,9 @@ client.on("interactionCreate", async interaction => {
 
 if (interaction.commandName === "close-ticket") {
   return closeTicketCommand.execute(interaction);
+}
+      if (interaction.commandName === "setup-ticket-panel") {
+  return setupTicketPanel.execute(interaction);
 }
 
       return interaction.reply({
