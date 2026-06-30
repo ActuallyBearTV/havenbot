@@ -8,16 +8,17 @@ async function execute(interaction) {
   const needed = xpNeeded(stats.level);
 
   const embed = new EmbedBuilder()
-    .setColor("#8B5CF6")
-    .setTitle(`🌟 ${target.username}'s Rank`)
-    .setThumbnail(target.displayAvatarURL())
-    .setDescription(
-  `**Rank:** #${position || "Unranked"}\n` +
-  `**Level:** ${stats.level}\n` +
-  `**XP:** ${stats.xp}/${needed}\n` +
-  `**Messages Counted:** ${stats.messages}`
-)
-    )
+  .setColor("#8B5CF6")
+  .setTitle(`🌟 ${target.username}'s Rank`)
+  .setThumbnail(target.displayAvatarURL())
+  .setDescription(
+    `**Rank:** #${position || "Unranked"}\n` +
+    `**Level:** ${stats.level}\n` +
+    `**XP:** ${stats.xp}/${needed}\n` +
+    `**Messages Counted:** ${stats.messages}`
+  )
+  .setFooter({ text: "Haven • Level System" })
+  .setTimestamp();
     .setFooter({ text: "Haven • Level System" })
     .setTimestamp();
 
