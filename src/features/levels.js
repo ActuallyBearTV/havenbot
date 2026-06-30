@@ -1,44 +1,51 @@
-const fs = require("fs");
+const Database = require("better-sqlite3");
 const path = require("path");
 
-const DATA_DIR = path.join(__dirname, "../../data");
-const DATA_FILE = path.join(DATA_DIR, "levels.json");
+const db = new Database(path.join(__dirname, "../../levels.db"));
+
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS levels (
+    guild_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    xp INTEGER DEFAULT 0,
+    level INTEGER DEFAULT 1,
+    messages INTEGER DEFAULT 0,
+    PRIMARY KEY (guild_id, user_id)
+  )
+`).run();
 
 const cooldowns = new Map();
 
-function ensureFile() {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
-  if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, "{}");
-}
-
-function readData() {
-  ensureFile();
-  return JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
-}
-
-function saveData(data) {
-  ensureFile();
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-}
-
 function xpNeeded(level) {
-    return 50 * level * level;
+  return 50 * level * level;
 }
 
 function getUser(guildId, userId) {
-  const data = readData();
+  let user = db.prepare(`
+    SELECT * FROM levels
+    WHERE guild_id = ? AND user_id = ?
+  `).get(guildId, userId);
 
-  if (!data[guildId]) data[guildId] = {};
-  if (!data[guildId][userId]) {
-    data[guildId][userId] = {
+  if (!user) {
+    db.prepare(`
+      INSERT INTO levels (guild_id, user_id, xp, level, messages)
+      VALUES (?, ?, 0, 1, 0)
+    `).run(guildId, userId);
+
+    user = {
+      guild_id: guildId,
+      user_id: userId,
       xp: 0,
       level: 1,
       messages: 0
     };
   }
 
-  saveData(data);
-  return data[guildId][userId];
+  return {
+    xp: user.xp,
+    level: user.level,
+    messages: user.messages
+  };
 }
 
 async function handleMessageXP(message) {
@@ -50,35 +57,30 @@ async function handleMessageXP(message) {
   cooldowns.set(key, true);
   setTimeout(() => cooldowns.delete(key), 60000);
 
-  const data = readData();
-
-  if (!data[message.guild.id]) data[message.guild.id] = {};
-  if (!data[message.guild.id][message.author.id]) {
-    data[message.guild.id][message.author.id] = {
-      xp: 0,
-      level: 1,
-      messages: 0
-    };
-  }
-
-  const userData = data[message.guild.id][message.author.id];
+  const userData = getUser(message.guild.id, message.author.id);
 
   const gainedXP = Math.floor(Math.random() * 11) + 15;
-  userData.xp += gainedXP;
-  userData.messages += 1;
 
-  const needed = xpNeeded(userData.level);
+  let xp = userData.xp + gainedXP;
+  let level = userData.level;
+  let messages = userData.messages + 1;
 
-  if (userData.xp >= needed) {
-    userData.xp -= needed;
-    userData.level += 1;
+  const needed = xpNeeded(level);
+
+  if (xp >= needed) {
+    xp -= needed;
+    level += 1;
 
     await message.channel.send({
-      content: `🎉 GG ${message.author}, you reached **Level ${userData.level}**!`
+      content: `🎉 GG ${message.author}, you reached **Level ${level}**!`
     });
   }
 
-  saveData(data);
+  db.prepare(`
+    UPDATE levels
+    SET xp = ?, level = ?, messages = ?
+    WHERE guild_id = ? AND user_id = ?
+  `).run(xp, level, messages, message.guild.id, message.author.id);
 }
 
 function getRank(guildId, userId) {
@@ -86,19 +88,13 @@ function getRank(guildId, userId) {
 }
 
 function getLeaderboard(guildId) {
-  const data = readData();
-  const guildData = data[guildId] || {};
-
-  return Object.entries(guildData)
-    .map(([userId, stats]) => ({
-      userId,
-      ...stats
-    }))
-    .sort((a, b) => {
-      if (b.level !== a.level) return b.level - a.level;
-      return b.xp - a.xp;
-    })
-    .slice(0, 10);
+  return db.prepare(`
+    SELECT user_id as userId, xp, level, messages
+    FROM levels
+    WHERE guild_id = ?
+    ORDER BY level DESC, xp DESC
+    LIMIT 10
+  `).all(guildId);
 }
 
 module.exports = {
