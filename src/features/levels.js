@@ -22,8 +22,7 @@ function saveData(data) {
 }
 
 function xpNeeded(level) {
-  return 50 * level * level;
-}
+    return 50 * level * level;
 }
 
 function getUser(guildId, userId) {
