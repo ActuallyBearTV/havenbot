@@ -3,6 +3,9 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+  .setName("setupserverstats")
+  .setDescription("Create and update Haven server statistics channels."),
+  new SlashCommandBuilder()
   .setName("profilebackground")
   .setDescription("Set a custom background for your profile card.")
   .addAttachmentOption(option =>
