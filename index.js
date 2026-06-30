@@ -2,11 +2,13 @@ require("dotenv").config();
 
 const { Client, GatewayIntentBits } = require("discord.js");
 
+const { buildSuggestionStatusModal } = require("./src/modals/suggestionStatus");
+
 const setupLevelRewardsCommand = require("./src/commands/setupLevelRewards");
 const rankCommand = require("./src/commands/rank");
 const leaderboardCommand = require("./src/commands/leaderboard");
 const { handleMessageXP } = require("./src/features/levels");
-const { buildSuggestionStatusModal } = require("./src/modals/suggestionStatus");
+
 const suggestCommand = require("./src/commands/suggest");
 const {
   createSuggestion,
@@ -110,6 +112,46 @@ client.on("interactionCreate", async interaction => {
         });
       }
 
+      if (interaction.customId.startsWith("suggest_status_")) {
+        const parts = interaction.customId.split("_");
+        const action = parts[2];
+        const suggestionId = Number(parts[3]);
+        const reason = interaction.fields.getTextInputValue("suggestion_status_reason");
+
+        const statusMap = {
+          accept: "Accepted",
+          deny: "Denied",
+          review: "Review"
+        };
+
+        const status = statusMap[action];
+
+        updateStatus(suggestionId, status, reason);
+
+        const suggestion = getSuggestion(suggestionId);
+
+        await interaction.message.edit({
+          embeds: [buildSuggestionEmbed(suggestion)],
+          components: buildSuggestionButtons(suggestionId)
+        });
+
+        try {
+          const user = await interaction.client.users.fetch(suggestion.user_id);
+
+          await user.send(
+            `Your suggestion **#${suggestion.id}** has been marked as **${status}**.\n\n` +
+            `**Reason:** ${reason}`
+          );
+        } catch (error) {
+          console.log("Could not DM suggestion author.");
+        }
+
+        return interaction.reply({
+          content: `✅ Suggestion #${suggestionId} updated to **${status}**.`,
+          ephemeral: true
+        });
+      }
+
       if (interaction.customId === customAnnouncementModal.customId) {
         return customAnnouncementModal.execute(interaction);
       }
@@ -154,11 +196,11 @@ client.on("interactionCreate", async interaction => {
           review: "Review"
         };
 
-       if (statusMap[action]) {
-  return interaction.showModal(
-    buildSuggestionStatusModal(action, suggestionId)
-  );
-}
+        if (statusMap[action]) {
+          return interaction.showModal(
+            buildSuggestionStatusModal(action, suggestionId)
+          );
+        }
       }
 
       if (
@@ -170,17 +212,9 @@ client.on("interactionCreate", async interaction => {
         return verifyMember(interaction);
       }
 
-      if (interaction.customId === "open_ticket") {
-        return ticketCommand.execute(interaction);
-      }
-
-      if (interaction.customId.startsWith("colour_")) {
-        return toggleColourRole(interaction);
-      }
-
-      if (interaction.customId.startsWith("ping_")) {
-        return toggleOptionalPing(interaction);
-      }
+      if (interaction.customId === "open_ticket") return ticketCommand.execute(interaction);
+      if (interaction.customId.startsWith("colour_")) return toggleColourRole(interaction);
+      if (interaction.customId.startsWith("ping_")) return toggleOptionalPing(interaction);
 
       if (
         interaction.customId.startsWith("gender_") ||
@@ -193,7 +227,6 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
-      
       if (interaction.commandName === "setuplevelrewards") return setupLevelRewardsCommand.execute(interaction);
       if (interaction.commandName === "suggest") return suggestCommand.execute(interaction);
       if (interaction.commandName === "setup-self-roles") return setupSelfRoles.execute(interaction);
