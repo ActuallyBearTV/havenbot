@@ -44,6 +44,50 @@ const setupColourRoles = require("./src/commands/setupColourRoles");
 const setupOptionalPings = require("./src/commands/setupOptionalPings");
 const postCustom = require("./src/commands/postCustom");
 
+if (interaction.isModalSubmit()) {
+  if (interaction.customId === "suggest_modal") {
+    const {
+      createSuggestion,
+      saveSuggestionMessage,
+      getSuggestion,
+      buildSuggestionEmbed,
+      buildSuggestionButtons
+    } = require("./src/features/suggestions");
+
+    const suggestionText = interaction.fields.getTextInputValue("suggestion_text");
+
+    const suggestionsChannel = interaction.guild.channels.cache.find(
+  channel => channel.name.includes("suggestions")
+);
+
+    if (!suggestionsChannel) {
+      return interaction.reply({
+        content: "I couldn't find a channel called `suggestions`.",
+        ephemeral: true
+      });
+    }
+
+    const suggestionId = createSuggestion(
+      interaction.guild.id,
+      interaction.user.id,
+      suggestionText
+    );
+
+    const suggestion = getSuggestion(suggestionId);
+
+    const sentMessage = await suggestionsChannel.send({
+      embeds: [buildSuggestionEmbed(suggestion)],
+      components: buildSuggestionButtons(suggestionId)
+    });
+
+    saveSuggestionMessage(suggestionId, sentMessage.id);
+
+    return interaction.reply({
+      content: `✅ Your suggestion has been posted in ${suggestionsChannel}.`,
+      ephemeral: true
+    });
+  }
+}
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
