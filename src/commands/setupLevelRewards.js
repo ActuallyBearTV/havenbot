@@ -1,4 +1,5 @@
 const { PermissionsBitField } = require("discord.js");
+const { saveLevelReward } = require("../features/levels");
 
 const rewards = [
   { level: 5, name: "🌱 Level 5" },
@@ -18,7 +19,7 @@ async function execute(interaction) {
 
   await interaction.deferReply({ ephemeral: true });
 
-  const created = [];
+  const results = [];
 
   for (const reward of rewards) {
     let role = interaction.guild.roles.cache.find(r => r.name === reward.name);
@@ -29,14 +30,16 @@ async function execute(interaction) {
         reason: `Level reward role for Level ${reward.level}`
       });
 
-      created.push(role.name);
+      results.push(`Created ${role}`);
+    } else {
+      results.push(`Found ${role}`);
     }
+
+    saveLevelReward(interaction.guild.id, reward.level, role.id);
   }
 
   return interaction.editReply({
-    content: created.length
-      ? `✅ Created level reward roles:\n${created.join("\n")}`
-      : "✅ All level reward roles already exist."
+    content: `✅ Level rewards saved:\n${results.join("\n")}`
   });
 }
 
