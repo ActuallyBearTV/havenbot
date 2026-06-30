@@ -3,7 +3,7 @@ require("dotenv").config();
 const { Client, GatewayIntentBits } = require("discord.js");
 
 const { buildSuggestionStatusModal } = require("./src/modals/suggestionStatus");
-
+const profileBackgroundCommand = require("./src/commands/profilebackground");
 const profileCommand = require("./src/commands/profile");
 const setupLevelRewardsCommand = require("./src/commands/setupLevelRewards");
 const rankCommand = require("./src/commands/rank");
@@ -228,6 +228,7 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "profilebackground") return profileBackgroundCommand.execute(interaction);
       if (interaction.commandName === "profilecolour") return profileColourCommand.execute(interaction);
       if (interaction.commandName === "profile") return profileCommand.execute(interaction);
       if (interaction.commandName === "setuplevelrewards") return setupLevelRewardsCommand.execute(interaction);
