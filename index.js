@@ -12,6 +12,8 @@ const {
   createSuggestion,
   saveSuggestionMessage,
   getSuggestion,
+  setVote,
+  updateStatus,
   buildSuggestionEmbed,
   buildSuggestionButtons
 } = require("./src/features/suggestions");
@@ -63,7 +65,11 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async message => {
-  await handleMessageXP(message);
+  try {
+    await handleMessageXP(message);
+  } catch (error) {
+    console.error("Message XP error:", error);
+  }
 });
 
 client.on("interactionCreate", async interaction => {
@@ -111,6 +117,54 @@ client.on("interactionCreate", async interaction => {
 
     if (interaction.isButton()) {
       console.log("BUTTON CLICKED:", interaction.customId);
+
+      if (interaction.customId.startsWith("suggest_")) {
+        const parts = interaction.customId.split("_");
+        const action = parts[1];
+        const suggestionId = Number(parts[2]);
+
+        if (!suggestionId) {
+          return interaction.reply({
+            content: "Invalid suggestion button.",
+            ephemeral: true
+          });
+        }
+
+        if (action === "up" || action === "down") {
+          setVote(suggestionId, interaction.user.id, action);
+
+          const suggestion = getSuggestion(suggestionId);
+
+          return interaction.update({
+            embeds: [buildSuggestionEmbed(suggestion)],
+            components: buildSuggestionButtons(suggestionId)
+          });
+        }
+
+        if (!interaction.member.permissions.has("ManageMessages")) {
+          return interaction.reply({
+            content: "Only staff can update suggestion status.",
+            ephemeral: true
+          });
+        }
+
+        const statusMap = {
+          accept: "Accepted",
+          deny: "Denied",
+          review: "Review"
+        };
+
+        if (statusMap[action]) {
+          updateStatus(suggestionId, statusMap[action]);
+
+          const suggestion = getSuggestion(suggestionId);
+
+          return interaction.update({
+            embeds: [buildSuggestionEmbed(suggestion)],
+            components: buildSuggestionButtons(suggestionId)
+          });
+        }
+      }
 
       if (
         interaction.customId === "verify_member" ||
