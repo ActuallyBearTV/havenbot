@@ -48,27 +48,38 @@ async function execute(interaction) {
   ctx.drawImage(avatar, 65, 65, 170, 170);
   ctx.restore();
 
+  const centerX = 535;
+
   ctx.fillStyle = "#FFFFFF";
+  ctx.textAlign = "center";
 
   ctx.font = "42px Inter";
-  ctx.fillText(target.username, 270, 95);
+  ctx.fillText(target.username, centerX, 90);
 
   ctx.font = "28px Inter";
-  ctx.fillText(`Rank #${position || "Unranked"}`, 270, 145);
-  ctx.fillText(`Level ${stats.level}`, 270, 185);
-  ctx.fillText(`${stats.xp} / ${needed} XP`, 270, 225);
+  ctx.fillText(`Rank #${position || "Unranked"}`, centerX, 135);
+  ctx.fillText(`Level ${stats.level}`, centerX, 175);
+
+  ctx.font = "22px Inter";
+  ctx.fillText(`Messages: ${stats.messages}`, centerX, 210);
+
+  ctx.font = "24px Inter";
+  ctx.fillText(`${stats.xp} / ${needed} XP`, centerX, 245);
+
+  const barWidth = 520;
+  const barHeight = 24;
+  const barX = centerX - barWidth / 2;
+  const barY = 255;
 
   ctx.fillStyle = "rgba(255,255,255,0.25)";
-  roundRect(ctx, 270, 240, 520, 28, 14);
+  roundRect(ctx, barX, barY, barWidth, barHeight, 12);
   ctx.fill();
 
   ctx.fillStyle = "#FFFFFF";
-  roundRect(ctx, 270, 240, 520 * percent, 28, 14);
+  roundRect(ctx, barX, barY, barWidth * percent, barHeight, 12);
   ctx.fill();
 
-  ctx.font = "20px Inter";
-  ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.fillText(`Messages counted: ${stats.messages}`, 270, 278);
+  ctx.textAlign = "left";
 
   const attachment = new AttachmentBuilder(canvas.toBuffer("image/png"), {
     name: "profile.png"
