@@ -12,7 +12,7 @@ const commands = [
     option
       .setName("image")
       .setDescription("The image to use as your profile background")
-      .setRequired(false)
+      .setRequired(true)
   ),
   new SlashCommandBuilder()
   .setName("profilecolour")
@@ -21,19 +21,19 @@ const commands = [
     option
       .setName("primary")
       .setDescription("Primary colour, e.g. #7C3AED")
-      .setRequired(true)
+      .setRequired(false)
   )
   .addStringOption(option =>
     option
       .setName("secondary")
       .setDescription("Secondary colour, e.g. #15152B")
-      .setRequired(true)
+      .setRequired(false)
   )
   .addStringOption(option =>
     option
       .setName("text")
       .setDescription("Text colour, e.g. #FFFFFF")
-      .setRequired(true)
+      .setRequired(false)
   ),
   new SlashCommandBuilder()
   .setName("profile")
