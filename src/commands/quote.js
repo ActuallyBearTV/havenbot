@@ -51,8 +51,10 @@ module.exports = {
     }
 
     const quotesChannel = interaction.guild.channels.cache.find(
-      channel => channel.name === "quotes" && channel.isTextBased()
-    );
+  channel =>
+    channel.name === "😭・quotes" &&
+    channel.isTextBased()
+);
 
     if (!quotesChannel) {
       return interaction.editReply("I couldn't find a `#quotes` channel.");
