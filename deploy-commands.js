@@ -12,7 +12,7 @@ const commands = [
     option
       .setName("image")
       .setDescription("The image to use as your profile background")
-      .setRequired(true)
+      .setRequired(false)
   ),
   new SlashCommandBuilder()
   .setName("profilecolour")
