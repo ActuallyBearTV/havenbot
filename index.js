@@ -1,17 +1,18 @@
 require("dotenv").config();
 
-const { Client, GatewayIntentBits } = require("discord.js");
+const {
+  Client,
+  GatewayIntentBits,
+  Partials
+} = require("discord.js");
+
+const { handleStarboard } = require("./src/features/starboard");
 const quoteCommand = require("./src/commands/quote");
+
 const setupServerStatsCommand = require("./src/commands/setupServerStats");
 const { updateServerStats } = require("./src/features/serverStats");
+
 const { buildSuggestionStatusModal } = require("./src/modals/suggestionStatus");
-const profileBackgroundCommand = require("./src/commands/profilebackground");
-const profileCommand = require("./src/commands/profile");
-const setupLevelRewardsCommand = require("./src/commands/setupLevelRewards");
-const rankCommand = require("./src/commands/rank");
-const leaderboardCommand = require("./src/commands/leaderboard");
-const { handleMessageXP } = require("./src/features/levels");
-const profileColourCommand = require("./src/commands/profilecolour");
 const suggestCommand = require("./src/commands/suggest");
 const {
   createSuggestion,
@@ -22,6 +23,15 @@ const {
   buildSuggestionEmbed,
   buildSuggestionButtons
 } = require("./src/features/suggestions");
+
+const profileBackgroundCommand = require("./src/commands/profilebackground");
+const profileCommand = require("./src/commands/profile");
+const profileColourCommand = require("./src/commands/profilecolour");
+
+const setupLevelRewardsCommand = require("./src/commands/setupLevelRewards");
+const rankCommand = require("./src/commands/rank");
+const leaderboardCommand = require("./src/commands/leaderboard");
+const { handleMessageXP } = require("./src/features/levels");
 
 const removeWarnCommand = require("./src/commands/removewarn");
 const warningsCommand = require("./src/commands/warnings");
@@ -45,8 +55,8 @@ const { sendStaffLog } = require("./src/utils/staffLogs");
 const setupTicketPanel = require("./src/commands/setupTicketPanel");
 const ticketCommand = require("./src/commands/ticket");
 const closeTicketCommand = require("./src/commands/closeTicket");
-const customAnnouncementModal = require("./src/modals/customAnnouncement");
 
+const customAnnouncementModal = require("./src/modals/customAnnouncement");
 const { toggleColourRole } = require("./src/buttons/colourRoles");
 const { toggleOptionalPing } = require("./src/buttons/optionalPings");
 
@@ -61,7 +71,13 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.MessageContent
+  ],
+  partials: [
+    Partials.Message,
+    Partials.Channel,
+    Partials.Reaction
   ]
 });
 
@@ -77,16 +93,15 @@ client.on("messageCreate", async message => {
   }
 });
 
-client.on("interactionCreate", async interaction => {
+client.on("messageReactionAdd", async reaction => {
   try {
-    if (interaction.isModalSubmit()) {
-      if (interaction.customId === "suggest_modal") {
-        const suggestionText = interaction.fields.getTextInputValue("suggestion_text");
+    await handleStarboard(reaction);
+  } catch (error) {
+    console.error("Starboard error:", error);
+  }
+});
 
-        const suggestionsChannel = interaction.guild.channels.cache.find(
-          channel => channel.name.includes("suggestions")
-        );
-        client.on("interactionCreate", async interaction => {
+client.on("interactionCreate", async interaction => {
   try {
     if (interaction.isMessageContextMenuCommand()) {
       if (interaction.commandName === "Quote") {
@@ -94,23 +109,14 @@ client.on("interactionCreate", async interaction => {
       }
     }
 
-    // your other slash command code below this
-  } catch (error) {
-    console.error(error);
+    if (interaction.isModalSubmit()) {
+      if (interaction.customId === "suggest_modal") {
+        const suggestionText = interaction.fields.getTextInputValue("suggestion_text");
 
-    if (!interaction.replied && !interaction.deferred) {
-      await interaction.reply({
-        content: "Something went wrong.",
-        ephemeral: true
-      });
-    }
-  }
-});
-if (interaction.isMessageContextMenuCommand()) {
-  if (interaction.commandName === "Quote") {
-    return quoteCommand.executeFromMessage(interaction);
-  }
-}
+        const suggestionsChannel = interaction.guild.channels.cache.find(
+          channel => channel.name.includes("suggestions")
+        );
+
         if (!suggestionsChannel) {
           return interaction.reply({
             content: "I couldn't find a channel with `suggestions` in the name.",
@@ -169,7 +175,7 @@ if (interaction.isMessageContextMenuCommand()) {
             `Your suggestion **#${suggestion.id}** has been marked as **${status}**.\n\n` +
             `**Reason:** ${reason}`
           );
-        } catch (error) {
+        } catch {
           console.log("Could not DM suggestion author.");
         }
 
@@ -254,9 +260,7 @@ if (interaction.isMessageContextMenuCommand()) {
     }
 
     if (interaction.isChatInputCommand()) {
-      if (interaction.commandName === "quote") {
-  await quoteCommand.execute(interaction);
-}
+      if (interaction.commandName === "quote") return quoteCommand.execute(interaction);
       if (interaction.commandName === "setupserverstats") return setupServerStatsCommand.execute(interaction);
       if (interaction.commandName === "profilebackground") return profileBackgroundCommand.execute(interaction);
       if (interaction.commandName === "profilecolour") return profileColourCommand.execute(interaction);
@@ -308,7 +312,9 @@ if (interaction.isMessageContextMenuCommand()) {
 
 client.on("guildMemberAdd", async member => {
   console.log(`✅ JOIN EVENT: ${member.user.tag}`);
-await updateServerStats(member.guild);
+
+  await updateServerStats(member.guild);
+
   await sendStaffLog(member.guild, {
     title: "📥 Member Joined",
     description: `${member} joined the server.`,
@@ -324,6 +330,8 @@ await updateServerStats(member.guild);
 });
 
 client.on("guildMemberRemove", async member => {
+  await updateServerStats(member.guild);
+
   await sendStaffLog(member.guild, {
     title: "📤 Member Left",
     description: `${member.user.tag} left the server.`,
