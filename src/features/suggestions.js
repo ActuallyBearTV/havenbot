@@ -1,15 +1,10 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const Database = require("better-sqlite3");
-const fs = require("fs");
-const path = require("path");
-
-const dataDir = process.env.RAILWAY_VOLUME_MOUNT_PATH || path.join(__dirname, "../../data");
-
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-}
-
-const db = new Database(path.join(dataDir, "haven.db"));
+const db = require("../database/database");
+const {
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
+} = require("discord.js");
 
 db.prepare(`
   CREATE TABLE IF NOT EXISTS suggestions (
