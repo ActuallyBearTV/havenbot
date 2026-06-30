@@ -3,6 +3,19 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+  .setName("rank")
+  .setDescription("View your Haven level rank.")
+  .addUserOption(option =>
+    option
+      .setName("user")
+      .setDescription("The member to check")
+      .setRequired(false)
+  ),
+
+new SlashCommandBuilder()
+  .setName("leaderboard")
+  .setDescription("View the Haven XP leaderboard."),
+  new SlashCommandBuilder()
   .setName("removewarn")
   .setDescription("Remove a specific warning from a member.")
   .addUserOption(option =>
