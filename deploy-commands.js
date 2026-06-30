@@ -3,6 +3,9 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+  .setName("suggest")
+  .setDescription("Submit a suggestion for Haven."),
+  new SlashCommandBuilder()
   .setName("setuplevelrewards")
   .setDescription("Create Haven level reward roles."),
   new SlashCommandBuilder()
