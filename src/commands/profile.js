@@ -105,11 +105,11 @@ async function execute(interaction) {
 
   // Stats
   ctx.font = "28px Inter";
-  ctx.fillText(`🏆 Rank #${position || "Unranked"}`, centerX, 155);
-  ctx.fillText(`⭐ Level ${stats.level}`, centerX, 190);
+  ctx.fillText(`Rank #${position || "Unranked"}`, centerX, 155);
+ctx.fillText(`Level ${stats.level}`, centerX, 190);
 
-  ctx.font = "22px Inter";
-  ctx.fillText(`💬 Messages: ${stats.messages}`, centerX, 220);
+ctx.font = "22px Inter";
+ctx.fillText(`Messages: ${stats.messages}`, centerX, 220);
 
   ctx.font = "24px Inter";
   ctx.fillText(`${stats.xp} / ${needed} XP`, centerX, 250);
