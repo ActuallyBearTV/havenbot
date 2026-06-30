@@ -21,6 +21,14 @@ db.prepare(`
     PRIMARY KEY (guild_id, user_id)
   )
 `).run();
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS level_rewards (
+    guild_id TEXT NOT NULL,
+    level INTEGER NOT NULL,
+    role_id TEXT NOT NULL,
+    PRIMARY KEY (guild_id, level)
+  )
+`).run();
 
 const cooldowns = new Map();
 
@@ -79,9 +87,24 @@ async function handleMessageXP(message) {
     xp -= needed;
     level += 1;
 
-    await message.channel.send({
-      content: `🎉 GG ${message.author}, you reached **Level ${level}**!`
-    });
+    const reward = getLevelReward(message.guild.id, level);
+
+if (reward) {
+  const member = await message.guild.members.fetch(message.author.id);
+  const role = message.guild.roles.cache.get(reward.roleId);
+
+  if (role && !member.roles.cache.has(reward.roleId)) {
+    await member.roles.add(reward.roleId);
+  }
+
+  await message.channel.send({
+    content: `🎉 GG ${message.author}, you reached **Level ${level}** and earned ${role}!`
+  });
+} else {
+  await message.channel.send({
+    content: `🎉 GG ${message.author}, you reached **Level ${level}**!`
+  });
+}
   }
 
   db.prepare(`
@@ -116,10 +139,28 @@ function getUserPosition(guildId, userId) {
 
   return index === -1 ? null : index + 1;
 }
+function saveLevelReward(guildId, level, roleId) {
+  db.prepare(`
+    INSERT INTO level_rewards (guild_id, level, role_id)
+    VALUES (?, ?, ?)
+    ON CONFLICT(guild_id, level)
+    DO UPDATE SET role_id = excluded.role_id
+  `).run(guildId, level, roleId);
+}
+
+function getLevelReward(guildId, level) {
+  return db.prepare(`
+    SELECT role_id AS roleId
+    FROM level_rewards
+    WHERE guild_id = ? AND level = ?
+  `).get(guildId, level);
+}
 module.exports = {
   handleMessageXP,
   getRank,
   getLeaderboard,
   getUserPosition,
+  saveLevelReward,
+  getLevelReward,
   xpNeeded
 };
