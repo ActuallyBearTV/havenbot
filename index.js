@@ -5,7 +5,6 @@ const { Client, GatewayIntentBits } = require("discord.js");
 const { buildSuggestionStatusModal } = require("./src/modals/suggestionStatus");
 
 const profileCommand = require("./src/commands/profile");
-
 const setupLevelRewardsCommand = require("./src/commands/setupLevelRewards");
 const rankCommand = require("./src/commands/rank");
 const leaderboardCommand = require("./src/commands/leaderboard");
@@ -229,15 +228,7 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
-      new SlashCommandBuilder()
-  .setName("profile")
-  .setDescription("View your Haven profile card.")
-  .addUserOption(option =>
-    option
-      .setName("user")
-      .setDescription("The member to view")
-      .setRequired(false)
-  ),
+      if (interaction.commandName === "profile") return profileCommand.execute(interaction);
       if (interaction.commandName === "setuplevelrewards") return setupLevelRewardsCommand.execute(interaction);
       if (interaction.commandName === "suggest") return suggestCommand.execute(interaction);
       if (interaction.commandName === "setup-self-roles") return setupSelfRoles.execute(interaction);
