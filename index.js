@@ -6,7 +6,7 @@ const setupLevelRewardsCommand = require("./src/commands/setupLevelRewards");
 const rankCommand = require("./src/commands/rank");
 const leaderboardCommand = require("./src/commands/leaderboard");
 const { handleMessageXP } = require("./src/features/levels");
-
+const { buildSuggestionStatusModal } = require("./src/modals/suggestionStatus");
 const suggestCommand = require("./src/commands/suggest");
 const {
   createSuggestion,
@@ -154,16 +154,11 @@ client.on("interactionCreate", async interaction => {
           review: "Review"
         };
 
-        if (statusMap[action]) {
-          updateStatus(suggestionId, statusMap[action]);
-
-          const suggestion = getSuggestion(suggestionId);
-
-          return interaction.update({
-            embeds: [buildSuggestionEmbed(suggestion)],
-            components: buildSuggestionButtons(suggestionId)
-          });
-        }
+       if (statusMap[action]) {
+  return interaction.showModal(
+    buildSuggestionStatusModal(action, suggestionId)
+  );
+}
       }
 
       if (
@@ -198,6 +193,7 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
+      
       if (interaction.commandName === "setuplevelrewards") return setupLevelRewardsCommand.execute(interaction);
       if (interaction.commandName === "suggest") return suggestCommand.execute(interaction);
       if (interaction.commandName === "setup-self-roles") return setupSelfRoles.execute(interaction);
