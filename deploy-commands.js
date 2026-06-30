@@ -3,6 +3,27 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+  .setName("profilecolour")
+  .setDescription("Customize your Haven profile card colours.")
+  .addStringOption(option =>
+    option
+      .setName("primary")
+      .setDescription("Primary colour, e.g. #7C3AED")
+      .setRequired(true)
+  )
+  .addStringOption(option =>
+    option
+      .setName("secondary")
+      .setDescription("Secondary colour, e.g. #15152B")
+      .setRequired(true)
+  )
+  .addStringOption(option =>
+    option
+      .setName("text")
+      .setDescription("Text colour, e.g. #FFFFFF")
+      .setRequired(true)
+  ),
+  new SlashCommandBuilder()
   .setName("profile")
   .setDescription("View your Haven profile card.")
   .addUserOption(option =>
