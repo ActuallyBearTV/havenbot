@@ -14,7 +14,11 @@ GlobalFonts.registerFromPath(
   path.join(__dirname, "../assets/fonts/Inter-Bold.ttf"),
   "Inter"
 );
+const fs = require("fs");
 
+const dataDir =
+  process.env.RAILWAY_VOLUME_MOUNT_PATH ||
+  path.join(__dirname, "../../data");
 async function execute(interaction) {
   await interaction.deferReply();
 
@@ -29,11 +33,29 @@ async function execute(interaction) {
   const canvas = createCanvas(900, 300);
   const ctx = canvas.getContext("2d");
 
+  let backgroundDrawn = false;
+
+if (settings.background) {
+  try {
+    const backgroundPath = path.join(dataDir, settings.background);
+
+    if (fs.existsSync(backgroundPath)) {
+      const bg = await loadImage(backgroundPath);
+      ctx.drawImage(bg, 0, 0, 900, 300);
+      backgroundDrawn = true;
+    }
+  } catch (error) {
+    console.log("Could not load profile background:", error.message);
+  }
+}
+
+if (!backgroundDrawn) {
   const gradient = ctx.createLinearGradient(0, 0, 900, 300);
   gradient.addColorStop(0, settings.secondary_colour);
   gradient.addColorStop(1, settings.primary_colour);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 900, 300);
+}
 
   ctx.fillStyle = "rgba(255,255,255,0.10)";
   roundRect(ctx, 25, 25, 850, 250, 28);
