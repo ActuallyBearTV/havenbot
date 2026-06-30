@@ -5,6 +5,7 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const setupLevelRewardsCommand = require("./src/commands/setupLevelRewards");
 const rankCommand = require("./src/commands/rank");
 const leaderboardCommand = require("./src/commands/leaderboard");
 const { handleMessageXP } = require("./src/features/levels");
@@ -96,6 +97,8 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "setuplevelrewards") { return setupLevelRewardsCommand.execute(interaction);
+}
       if (interaction.commandName === "setup-self-roles") return setupSelfRoles.execute(interaction);
       if (interaction.commandName === "rank") return rankCommand.execute(interaction);
       if (interaction.commandName === "leaderboard") return leaderboardCommand.execute(interaction);
