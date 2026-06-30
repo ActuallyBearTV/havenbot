@@ -10,6 +10,7 @@ const rankCommand = require("./src/commands/rank");
 const leaderboardCommand = require("./src/commands/leaderboard");
 const { handleMessageXP } = require("./src/features/levels");
 
+const suggestCommand = require("./src/commands/suggest");
 
 const removeWarnCommand = require("./src/commands/removewarn");
 const warningsCommand = require("./src/commands/warnings");
@@ -98,6 +99,8 @@ client.on("interactionCreate", async interaction => {
 
     if (interaction.isChatInputCommand()) {
       if (interaction.commandName === "setuplevelrewards") { return setupLevelRewardsCommand.execute(interaction);
+}
+      if (interaction.commandName === "suggest") { return suggestCommand.execute(interaction);
 }
       if (interaction.commandName === "setup-self-roles") return setupSelfRoles.execute(interaction);
       if (interaction.commandName === "rank") return rankCommand.execute(interaction);
