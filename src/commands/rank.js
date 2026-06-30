@@ -1,0 +1,25 @@
+const { EmbedBuilder } = require("discord.js");
+const { getRank, xpNeeded } = require("../features/levels");
+
+async function execute(interaction) {
+  const target = interaction.options.getUser("user") || interaction.user;
+  const stats = getRank(interaction.guild.id, target.id);
+
+  const needed = xpNeeded(stats.level);
+
+  const embed = new EmbedBuilder()
+    .setColor("#8B5CF6")
+    .setTitle(`🌟 ${target.username}'s Rank`)
+    .setThumbnail(target.displayAvatarURL())
+    .setDescription(
+      `**Level:** ${stats.level}\n` +
+      `**XP:** ${stats.xp}/${needed}\n` +
+      `**Messages Counted:** ${stats.messages}`
+    )
+    .setFooter({ text: "Haven • Level System" })
+    .setTimestamp();
+
+  return interaction.reply({ embeds: [embed] });
+}
+
+module.exports = { execute };
