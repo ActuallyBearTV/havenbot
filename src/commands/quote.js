@@ -6,7 +6,13 @@ GlobalFonts.registerFromPath(
   path.join(__dirname, "../assets/fonts/Inter-Bold.ttf"),
   "Inter"
 );
+module.exports.executeFromMessage = async function (interaction) {
+  await interaction.deferReply({ ephemeral: true });
 
+  const quotedMessage = interaction.targetMessage;
+
+  await interaction.editReply(`Quoted message: ${quotedMessage.content}`);
+};
 module.exports = {
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
