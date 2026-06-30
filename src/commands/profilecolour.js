@@ -1,13 +1,15 @@
-const { updateProfileColours } = require("../features/profileSettings");
+const { getProfileSettings, updateProfileColours } = require("../features/profileSettings");
 
 function isHex(value) {
   return /^#[0-9A-F]{6}$/i.test(value);
 }
 
 async function execute(interaction) {
-  const primary = interaction.options.getString("primary");
-  const secondary = interaction.options.getString("secondary");
-  const text = interaction.options.getString("text");
+  const current = getProfileSettings(interaction.guild.id, interaction.user.id);
+
+  const primary = interaction.options.getString("primary") || current.primary_colour;
+  const secondary = interaction.options.getString("secondary") || current.secondary_colour;
+  const text = interaction.options.getString("text") || current.text_colour;
 
   if (!isHex(primary) || !isHex(secondary) || !isHex(text)) {
     return interaction.reply({
@@ -25,7 +27,11 @@ async function execute(interaction) {
   );
 
   return interaction.reply({
-    content: "✅ Your profile colours have been updated!",
+    content:
+      `✅ Profile colours updated!\n\n` +
+      `Primary: \`${primary}\`\n` +
+      `Secondary: \`${secondary}\`\n` +
+      `Text: \`${text}\``,
     ephemeral: true
   });
 }
