@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const { Client, GatewayIntentBits } = require("discord.js");
 
+const setupServerStatsCommand = require("./src/commands/setupServerStats");
+const { updateServerStats } = require("./src/features/serverStats");
 const { buildSuggestionStatusModal } = require("./src/modals/suggestionStatus");
 const profileBackgroundCommand = require("./src/commands/profilebackground");
 const profileCommand = require("./src/commands/profile");
@@ -228,6 +230,7 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "setupserverstats") return setupServerStatsCommand.execute(interaction);
       if (interaction.commandName === "profilebackground") return profileBackgroundCommand.execute(interaction);
       if (interaction.commandName === "profilecolour") return profileColourCommand.execute(interaction);
       if (interaction.commandName === "profile") return profileCommand.execute(interaction);
@@ -278,7 +281,7 @@ client.on("interactionCreate", async interaction => {
 
 client.on("guildMemberAdd", async member => {
   console.log(`✅ JOIN EVENT: ${member.user.tag}`);
-
+await updateServerStats(member.guild);
   await sendStaffLog(member.guild, {
     title: "📥 Member Joined",
     description: `${member} joined the server.`,
