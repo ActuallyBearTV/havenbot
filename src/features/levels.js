@@ -96,10 +96,23 @@ function getLeaderboard(guildId) {
     LIMIT 10
   `).all(guildId);
 }
+function getUserPosition(guildId, userId) {
+  const leaderboard = db.prepare(`
+    SELECT user_id
+    FROM levels
+    WHERE guild_id = ?
+    ORDER BY level DESC, xp DESC
+  `).all(guildId);
+
+  const index = leaderboard.findIndex(user => user.user_id === userId);
+
+  return index === -1 ? null : index + 1;
+}
 
 module.exports = {
   handleMessageXP,
   getRank,
   getLeaderboard,
+  getUserPosition,
   xpNeeded
 };
