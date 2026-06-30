@@ -1,8 +1,14 @@
 const Database = require("better-sqlite3");
 const path = require("path");
+const fs = require("fs");
 
-const db = new Database(path.join(__dirname, "../../data/haven.db"));
+const dataDir = path.join(__dirname, "../../data");
 
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+const db = new Database(path.join(dataDir, "haven.db"));
 db.prepare(`
   CREATE TABLE IF NOT EXISTS levels (
     guild_id TEXT NOT NULL,
