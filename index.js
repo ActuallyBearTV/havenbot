@@ -86,6 +86,26 @@ client.on("interactionCreate", async interaction => {
         const suggestionsChannel = interaction.guild.channels.cache.find(
           channel => channel.name.includes("suggestions")
         );
+        client.on("interactionCreate", async interaction => {
+  try {
+    if (interaction.isMessageContextMenuCommand()) {
+      if (interaction.commandName === "Quote") {
+        return quoteCommand.executeFromMessage(interaction);
+      }
+    }
+
+    // your other slash command code below this
+  } catch (error) {
+    console.error(error);
+
+    if (!interaction.replied && !interaction.deferred) {
+      await interaction.reply({
+        content: "Something went wrong.",
+        ephemeral: true
+      });
+    }
+  }
+});
 if (interaction.isMessageContextMenuCommand()) {
   if (interaction.commandName === "Quote") {
     return quoteCommand.executeFromMessage(interaction);
