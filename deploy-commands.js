@@ -3,6 +3,9 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+  .setName("setuplevelrewards")
+  .setDescription("Create Haven level reward roles."),
+  new SlashCommandBuilder()
   .setName("rank")
   .setDescription("View your Haven level rank.")
   .addUserOption(option =>
