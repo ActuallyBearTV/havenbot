@@ -14,10 +14,15 @@ db.prepare(`
     message_id TEXT,
     suggestion TEXT NOT NULL,
     status TEXT DEFAULT 'Pending',
+    status_reason TEXT,
     upvotes INTEGER DEFAULT 0,
     downvotes INTEGER DEFAULT 0
   )
 `).run();
+
+try {
+  db.prepare(`ALTER TABLE suggestions ADD COLUMN status_reason TEXT`).run();
+} catch (error) {}
 
 db.prepare(`
   CREATE TABLE IF NOT EXISTS suggestion_votes (
@@ -90,12 +95,12 @@ function setVote(suggestionId, userId, vote) {
   `).run(upvotes, downvotes, suggestionId);
 }
 
-function updateStatus(suggestionId, status) {
+function updateStatus(suggestionId, status, reason = null) {
   db.prepare(`
     UPDATE suggestions
-    SET status = ?
+    SET status = ?, status_reason = ?
     WHERE id = ?
-  `).run(status, suggestionId);
+  `).run(status, reason, suggestionId);
 }
 
 function buildSuggestionEmbed(suggestion) {
@@ -118,6 +123,9 @@ function buildSuggestionEmbed(suggestion) {
     .addFields(
       { name: "Suggested By", value: `<@${suggestion.user_id}>`, inline: true },
       { name: "Status", value: suggestion.status, inline: true },
+      ...(suggestion.status_reason
+        ? [{ name: "Reason", value: suggestion.status_reason, inline: false }]
+        : []),
       { name: "Votes", value: `👍 ${suggestion.upvotes}  |  👎 ${suggestion.downvotes}`, inline: false }
     )
     .setFooter({ text: "Haven • Suggestions" })
