@@ -86,7 +86,11 @@ client.on("interactionCreate", async interaction => {
         const suggestionsChannel = interaction.guild.channels.cache.find(
           channel => channel.name.includes("suggestions")
         );
-
+if (interaction.isMessageContextMenuCommand()) {
+  if (interaction.commandName === "Quote") {
+    return quoteCommand.executeFromMessage(interaction);
+  }
+}
         if (!suggestionsChannel) {
           return interaction.reply({
             content: "I couldn't find a channel with `suggestions` in the name.",
