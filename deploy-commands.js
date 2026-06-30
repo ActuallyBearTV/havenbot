@@ -1,6 +1,12 @@
 require("dotenv").config();
-const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-
+const {
+  REST,
+  Routes,
+  SlashCommandBuilder,
+  ContextMenuCommandBuilder,
+  ApplicationCommandType,
+  PermissionFlagsBits
+} = require("discord.js");
 const commands = [ 
   new SlashCommandBuilder()
   .setName("quote")
@@ -11,6 +17,9 @@ const commands = [
       .setDescription("Paste the message link here")
       .setRequired(true)
   ),
+  new ContextMenuCommandBuilder()
+  .setName("Quote")
+  .setType(ApplicationCommandType.Message),
   new SlashCommandBuilder()
   .setName("setupserverstats")
   .setDescription("Create and update Haven server statistics channels."),
