@@ -3,6 +3,15 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+  .setName("quote")
+  .setDescription("Quote a previous message into #quotes")
+  .addStringOption(option =>
+    option
+      .setName("message")
+      .setDescription("Paste the message link here")
+      .setRequired(true)
+  ),
+  new SlashCommandBuilder()
     .setName("quote")
     .setDescription("Create a quote image.")
     .addStringOption(option =>
