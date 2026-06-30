@@ -3,6 +3,15 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+  .setName("profile")
+  .setDescription("View your Haven profile card.")
+  .addUserOption(option =>
+    option
+      .setName("user")
+      .setDescription("The member to view")
+      .setRequired(false)
+  ),
+  new SlashCommandBuilder()
   .setName("suggest")
   .setDescription("Submit a suggestion for Haven."),
   new SlashCommandBuilder()
