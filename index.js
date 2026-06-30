@@ -1,9 +1,6 @@
 require("dotenv").config();
 
-const {
-  Client,
-  GatewayIntentBits
-} = require("discord.js");
+const { Client, GatewayIntentBits } = require("discord.js");
 
 const setupLevelRewardsCommand = require("./src/commands/setupLevelRewards");
 const rankCommand = require("./src/commands/rank");
@@ -11,6 +8,13 @@ const leaderboardCommand = require("./src/commands/leaderboard");
 const { handleMessageXP } = require("./src/features/levels");
 
 const suggestCommand = require("./src/commands/suggest");
+const {
+  createSuggestion,
+  saveSuggestionMessage,
+  getSuggestion,
+  buildSuggestionEmbed,
+  buildSuggestionButtons
+} = require("./src/features/suggestions");
 
 const removeWarnCommand = require("./src/commands/removewarn");
 const warningsCommand = require("./src/commands/warnings");
@@ -44,50 +48,6 @@ const setupColourRoles = require("./src/commands/setupColourRoles");
 const setupOptionalPings = require("./src/commands/setupOptionalPings");
 const postCustom = require("./src/commands/postCustom");
 
-if (interaction.isModalSubmit()) {
-  if (interaction.customId === "suggest_modal") {
-    const {
-      createSuggestion,
-      saveSuggestionMessage,
-      getSuggestion,
-      buildSuggestionEmbed,
-      buildSuggestionButtons
-    } = require("./src/features/suggestions");
-
-    const suggestionText = interaction.fields.getTextInputValue("suggestion_text");
-
-    const suggestionsChannel = interaction.guild.channels.cache.find(
-  channel => channel.name.includes("suggestions")
-);
-
-    if (!suggestionsChannel) {
-      return interaction.reply({
-        content: "I couldn't find a channel called `suggestions`.",
-        ephemeral: true
-      });
-    }
-
-    const suggestionId = createSuggestion(
-      interaction.guild.id,
-      interaction.user.id,
-      suggestionText
-    );
-
-    const suggestion = getSuggestion(suggestionId);
-
-    const sentMessage = await suggestionsChannel.send({
-      embeds: [buildSuggestionEmbed(suggestion)],
-      components: buildSuggestionButtons(suggestionId)
-    });
-
-    saveSuggestionMessage(suggestionId, sentMessage.id);
-
-    return interaction.reply({
-      content: `✅ Your suggestion has been posted in ${suggestionsChannel}.`,
-      ephemeral: true
-    });
-  }
-}
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -105,8 +65,50 @@ client.once("ready", () => {
 client.on("messageCreate", async message => {
   await handleMessageXP(message);
 });
+
 client.on("interactionCreate", async interaction => {
   try {
+    if (interaction.isModalSubmit()) {
+      if (interaction.customId === "suggest_modal") {
+        const suggestionText = interaction.fields.getTextInputValue("suggestion_text");
+
+        const suggestionsChannel = interaction.guild.channels.cache.find(
+          channel => channel.name.includes("suggestions")
+        );
+
+        if (!suggestionsChannel) {
+          return interaction.reply({
+            content: "I couldn't find a channel with `suggestions` in the name.",
+            ephemeral: true
+          });
+        }
+
+        const suggestionId = createSuggestion(
+          interaction.guild.id,
+          interaction.user.id,
+          suggestionText
+        );
+
+        const suggestion = getSuggestion(suggestionId);
+
+        const sentMessage = await suggestionsChannel.send({
+          embeds: [buildSuggestionEmbed(suggestion)],
+          components: buildSuggestionButtons(suggestionId)
+        });
+
+        saveSuggestionMessage(suggestionId, sentMessage.id);
+
+        return interaction.reply({
+          content: `✅ Your suggestion has been posted in ${suggestionsChannel}.`,
+          ephemeral: true
+        });
+      }
+
+      if (interaction.customId === customAnnouncementModal.customId) {
+        return customAnnouncementModal.execute(interaction);
+      }
+    }
+
     if (interaction.isButton()) {
       console.log("BUTTON CLICKED:", interaction.customId);
 
@@ -142,10 +144,8 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
-      if (interaction.commandName === "setuplevelrewards") { return setupLevelRewardsCommand.execute(interaction);
-}
-      if (interaction.commandName === "suggest") { return suggestCommand.execute(interaction);
-}
+      if (interaction.commandName === "setuplevelrewards") return setupLevelRewardsCommand.execute(interaction);
+      if (interaction.commandName === "suggest") return suggestCommand.execute(interaction);
       if (interaction.commandName === "setup-self-roles") return setupSelfRoles.execute(interaction);
       if (interaction.commandName === "rank") return rankCommand.execute(interaction);
       if (interaction.commandName === "leaderboard") return leaderboardCommand.execute(interaction);
@@ -159,7 +159,6 @@ client.on("interactionCreate", async interaction => {
       if (interaction.commandName === "unlock") return unlockCommand.execute(interaction);
       if (interaction.commandName === "lock") return lockCommand.execute(interaction);
       if (interaction.commandName === "purge") return purgeCommand.execute(interaction);
-
       if (interaction.commandName === "setup-colour-roles") return setupColourRoles.execute(interaction);
       if (interaction.commandName === "setup-optional-pings") return setupOptionalPings.execute(interaction);
       if (interaction.commandName === "post-custom") return postCustom.execute(interaction);
@@ -172,12 +171,6 @@ client.on("interactionCreate", async interaction => {
         content: "This command is installed, but this feature has not been connected yet.",
         ephemeral: true
       });
-    }
-
-    if (interaction.isModalSubmit()) {
-      if (interaction.customId === customAnnouncementModal.customId) {
-        return customAnnouncementModal.execute(interaction);
-      }
     }
   } catch (error) {
     console.error(error);
