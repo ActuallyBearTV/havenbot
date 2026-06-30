@@ -29,7 +29,15 @@ function getProfileSettings(guildId, userId) {
 
   return settings;
 }
+function updateProfileBackground(guildId, userId, background) {
+  getProfileSettings(guildId, userId);
 
+  db.prepare(`
+    UPDATE profile_settings
+    SET background = ?
+    WHERE guild_id = ? AND user_id = ?
+  `).run(background, guildId, userId);
+}
 function updateProfileColours(guildId, userId, primary, secondary, text) {
   getProfileSettings(guildId, userId);
 
@@ -42,5 +50,6 @@ function updateProfileColours(guildId, userId, primary, secondary, text) {
 
 module.exports = {
   getProfileSettings,
-  updateProfileColours
+  updateProfileColours,
+  updateProfileBackground
 };
