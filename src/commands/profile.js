@@ -1,5 +1,6 @@
 const { AttachmentBuilder } = require("discord.js");
 const path = require("path");
+const fs = require("fs");
 
 const {
   createCanvas,
@@ -14,15 +15,22 @@ GlobalFonts.registerFromPath(
   path.join(__dirname, "../assets/fonts/Inter-Bold.ttf"),
   "Inter"
 );
-const fs = require("fs");
 
 const dataDir =
   process.env.RAILWAY_VOLUME_MOUNT_PATH ||
   path.join(__dirname, "../../data");
+
 async function execute(interaction) {
   await interaction.deferReply();
 
-  const target = interaction.options.getUser("user") || interaction.user;
+  const target =
+    interaction.options.getUser("user") || interaction.user;
+
+  const member =
+    interaction.options.getMember("user") || interaction.member;
+
+  const displayName = member.displayName;
+
   const stats = getRank(interaction.guild.id, target.id);
   const position = getUserPosition(interaction.guild.id, target.id);
   const needed = xpNeeded(stats.level);
@@ -35,34 +43,40 @@ async function execute(interaction) {
 
   let backgroundDrawn = false;
 
-if (settings.background) {
-  try {
-    const backgroundPath = path.join(dataDir, settings.background);
+  if (settings.background) {
+    try {
+      const backgroundPath = path.join(dataDir, settings.background);
 
-    if (fs.existsSync(backgroundPath)) {
-      const bg = await loadImage(backgroundPath);
-      ctx.drawImage(bg, 0, 0, 900, 300);
-      backgroundDrawn = true;
+      if (fs.existsSync(backgroundPath)) {
+        const bg = await loadImage(backgroundPath);
+        ctx.drawImage(bg, 0, 0, 900, 300);
+        backgroundDrawn = true;
+      }
+    } catch (err) {
+      console.log("Could not load profile background:", err.message);
     }
-  } catch (error) {
-    console.log("Could not load profile background:", error.message);
   }
-}
 
-if (!backgroundDrawn) {
-  const gradient = ctx.createLinearGradient(0, 0, 900, 300);
-  gradient.addColorStop(0, settings.secondary_colour);
-  gradient.addColorStop(1, settings.primary_colour);
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, 900, 300);
-}
+  if (!backgroundDrawn) {
+    const gradient = ctx.createLinearGradient(0, 0, 900, 300);
+    gradient.addColorStop(0, settings.secondary_colour);
+    gradient.addColorStop(1, settings.primary_colour);
 
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 900, 300);
+  }
+
+  // Glass panel
   ctx.fillStyle = "rgba(255,255,255,0.10)";
   roundRect(ctx, 25, 25, 850, 250, 28);
   ctx.fill();
 
+  // Avatar
   const avatar = await loadImage(
-    target.displayAvatarURL({ extension: "png", size: 256 })
+    target.displayAvatarURL({
+      extension: "png",
+      size: 256
+    })
   );
 
   ctx.save();
@@ -75,26 +89,36 @@ if (!backgroundDrawn) {
 
   const centerX = 535;
 
-  ctx.fillStyle = settings.text_colour;
   ctx.textAlign = "center";
 
+  // Nickname
+  ctx.fillStyle = settings.text_colour;
   ctx.font = "42px Inter";
-  ctx.fillText(target.username, centerX, 90);
+  ctx.fillText(displayName, centerX, 85);
 
+  // Username
+  ctx.font = "18px Inter";
+  ctx.fillStyle = "rgba(255,255,255,0.75)";
+  ctx.fillText(`@${target.username}`, centerX, 110);
+
+  ctx.fillStyle = settings.text_colour;
+
+  // Stats
   ctx.font = "28px Inter";
-  ctx.fillText(`Rank #${position || "Unranked"}`, centerX, 135);
-  ctx.fillText(`Level ${stats.level}`, centerX, 175);
+  ctx.fillText(`🏆 Rank #${position || "Unranked"}`, centerX, 155);
+  ctx.fillText(`⭐ Level ${stats.level}`, centerX, 190);
 
   ctx.font = "22px Inter";
-  ctx.fillText(`Messages: ${stats.messages}`, centerX, 210);
+  ctx.fillText(`💬 Messages: ${stats.messages}`, centerX, 220);
 
   ctx.font = "24px Inter";
-  ctx.fillText(`${stats.xp} / ${needed} XP`, centerX, 245);
+  ctx.fillText(`${stats.xp} / ${needed} XP`, centerX, 250);
 
+  // XP Bar
   const barWidth = 520;
   const barHeight = 24;
   const barX = centerX - barWidth / 2;
-  const barY = 255;
+  const barY = 265;
 
   ctx.fillStyle = "rgba(255,255,255,0.25)";
   roundRect(ctx, barX, barY, barWidth, barHeight, 12);
@@ -106,11 +130,16 @@ if (!backgroundDrawn) {
 
   ctx.textAlign = "left";
 
-  const attachment = new AttachmentBuilder(canvas.toBuffer("image/png"), {
-    name: "profile.png"
-  });
+  const attachment = new AttachmentBuilder(
+    canvas.toBuffer("image/png"),
+    {
+      name: "profile.png"
+    }
+  );
 
-  return interaction.editReply({ files: [attachment] });
+  return interaction.editReply({
+    files: [attachment]
+  });
 }
 
 function roundRect(ctx, x, y, width, height, radius) {
