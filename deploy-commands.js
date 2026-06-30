@@ -3,6 +3,21 @@ const { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } = require("disc
 
 const commands = [ 
   new SlashCommandBuilder()
+    .setName("quote")
+    .setDescription("Create a quote image.")
+    .addStringOption(option =>
+        option
+            .setName("quote")
+            .setDescription("The quote")
+            .setRequired(true)
+    )
+    .addUserOption(option =>
+        option
+            .setName("user")
+            .setDescription("Who said it?")
+            .setRequired(false)
+    ),
+  new SlashCommandBuilder()
   .setName("setupserverstats")
   .setDescription("Create and update Haven server statistics channels."),
   new SlashCommandBuilder()
