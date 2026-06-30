@@ -5,6 +5,11 @@ const {
   GatewayIntentBits
 } = require("discord.js");
 
+const rankCommand = require("./src/commands/rank");
+const leaderboardCommand = require("./src/commands/leaderboard");
+const { handleMessageXP } = require("./src/features/levels");
+
+
 const removeWarnCommand = require("./src/commands/removewarn");
 const warningsCommand = require("./src/commands/warnings");
 const warnCommand = require("./src/commands/warn");
@@ -41,7 +46,9 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildPresences
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
   ]
 });
 
@@ -49,6 +56,9 @@ client.once("ready", () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
+client.on("messageCreate", async message => {
+  await handleMessageXP(message);
+});
 client.on("interactionCreate", async interaction => {
   try {
     if (interaction.isButton()) {
@@ -87,7 +97,8 @@ client.on("interactionCreate", async interaction => {
 
     if (interaction.isChatInputCommand()) {
       if (interaction.commandName === "setup-self-roles") return setupSelfRoles.execute(interaction);
-
+      if (interaction.commandName === "rank") return rankCommand.execute(interaction);
+      if (interaction.commandName === "leaderboard") return leaderboardCommand.execute(interaction);
       if (interaction.commandName === "removewarn") return removeWarnCommand.execute(interaction);
       if (interaction.commandName === "warnings") return warningsCommand.execute(interaction);
       if (interaction.commandName === "warn") return warnCommand.execute(interaction);
