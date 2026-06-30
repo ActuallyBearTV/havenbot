@@ -43,7 +43,12 @@ async function execute(interaction) {
   ctx.fillStyle = "#FFFFFF";
 
   ctx.font = "bold 42px sans-serif";
-  ctx.fillText(target.username, 270, 95);
+  console.log("Username:", target.username);
+
+ctx.fillStyle = "#ff0000";
+ctx.fillRect(270, 70, 250, 50);
+
+ctx.fillText("TEST", 270, 95);
 
   ctx.font = "28px sans-serif";
   ctx.fillText(`Rank #${position || "Unranked"}`, 270, 145);
