@@ -1,5 +1,5 @@
 const { AttachmentBuilder } = require("discord.js");
-const { createCanvas, loadImage, GlobalFonts } = require("@napi-rs/canvas");
+const { createCanvas, loadImage } = require("@napi-rs/canvas");
 const { getRank, getUserPosition, xpNeeded } = require("../features/levels");
 
 async function execute(interaction) {
@@ -41,10 +41,11 @@ async function execute(interaction) {
 
   // Text
   ctx.fillStyle = "#FFFFFF";
-  ctx.font = "bold 42px Arial";
+
+  ctx.font = "bold 42px sans-serif";
   ctx.fillText(target.username, 270, 95);
 
-  ctx.font = "28px Arial";
+  ctx.font = "28px sans-serif";
   ctx.fillText(`Rank #${position || "Unranked"}`, 270, 145);
   ctx.fillText(`Level ${stats.level}`, 270, 185);
   ctx.fillText(`${stats.xp} / ${needed} XP`, 270, 225);
@@ -60,7 +61,7 @@ async function execute(interaction) {
   ctx.fill();
 
   // Footer
-  ctx.font = "20px Arial";
+  ctx.font = "20px sans-serif";
   ctx.fillStyle = "rgba(255,255,255,0.8)";
   ctx.fillText(`Messages counted: ${stats.messages}`, 270, 278);
 
