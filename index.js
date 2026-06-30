@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const { Client, GatewayIntentBits } = require("discord.js");
-
+const quoteCommand = require("./src/commands/quote");
 const setupServerStatsCommand = require("./src/commands/setupServerStats");
 const { updateServerStats } = require("./src/features/serverStats");
 const { buildSuggestionStatusModal } = require("./src/modals/suggestionStatus");
@@ -230,6 +230,9 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "quote") {
+  await quoteCommand.execute(interaction);
+}
       if (interaction.commandName === "setupserverstats") return setupServerStatsCommand.execute(interaction);
       if (interaction.commandName === "profilebackground") return profileBackgroundCommand.execute(interaction);
       if (interaction.commandName === "profilecolour") return profileColourCommand.execute(interaction);
