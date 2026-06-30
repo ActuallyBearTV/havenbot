@@ -6,13 +6,13 @@ const {
   loadImage,
   GlobalFonts
 } = require("@napi-rs/canvas");
+
 const { getRank, getUserPosition, xpNeeded } = require("../features/levels");
-const fontLoaded = GlobalFonts.registerFromPath(
+
+GlobalFonts.registerFromPath(
   path.join(__dirname, "../assets/fonts/Inter-Bold.ttf"),
   "Inter"
 );
-
-console.log("Inter font loaded:", fontLoaded);
 
 async function execute(interaction) {
   await interaction.deferReply();
@@ -26,19 +26,16 @@ async function execute(interaction) {
   const canvas = createCanvas(900, 300);
   const ctx = canvas.getContext("2d");
 
-  // Background
   const gradient = ctx.createLinearGradient(0, 0, 900, 300);
   gradient.addColorStop(0, "#15152B");
   gradient.addColorStop(1, "#7C3AED");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 900, 300);
 
-  // Card panel
   ctx.fillStyle = "rgba(255,255,255,0.10)";
   roundRect(ctx, 25, 25, 850, 250, 28);
   ctx.fill();
 
-  // Avatar
   const avatar = await loadImage(
     target.displayAvatarURL({ extension: "png", size: 256 })
   );
@@ -51,35 +48,26 @@ async function execute(interaction) {
   ctx.drawImage(avatar, 65, 65, 170, 170);
   ctx.restore();
 
-  // Text
   ctx.fillStyle = "#FFFFFF";
 
-  ctx.font = "bold 42px Inter";
-  console.log("Username:", target.username);
-
-ctx.fillStyle = "#ff0000";
-ctx.fillRect(270, 70, 250, 50);
-
-ctx.fillText("TEST", 270, 95);
+  ctx.font = "42px Inter";
+  ctx.fillText(target.username, 270, 95);
 
   ctx.font = "28px Inter";
   ctx.fillText(`Rank #${position || "Unranked"}`, 270, 145);
   ctx.fillText(`Level ${stats.level}`, 270, 185);
   ctx.fillText(`${stats.xp} / ${needed} XP`, 270, 225);
 
-  // Progress bar background
   ctx.fillStyle = "rgba(255,255,255,0.25)";
   roundRect(ctx, 270, 240, 520, 28, 14);
   ctx.fill();
 
-  // Progress bar fill
   ctx.fillStyle = "#FFFFFF";
   roundRect(ctx, 270, 240, 520 * percent, 28, 14);
   ctx.fill();
 
-  // Footer
   ctx.font = "20px Inter";
-  ctx.fillStyle = "rgba(255,255,255,0.8)";
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
   ctx.fillText(`Messages counted: ${stats.messages}`, 270, 278);
 
   const attachment = new AttachmentBuilder(canvas.toBuffer("image/png"), {
