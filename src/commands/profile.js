@@ -8,6 +8,7 @@ const {
 } = require("@napi-rs/canvas");
 
 const { getRank, getUserPosition, xpNeeded } = require("../features/levels");
+const { getProfileSettings } = require("../features/profileSettings");
 
 GlobalFonts.registerFromPath(
   path.join(__dirname, "../assets/fonts/Inter-Bold.ttf"),
@@ -23,12 +24,14 @@ async function execute(interaction) {
   const needed = xpNeeded(stats.level);
   const percent = Math.min(stats.xp / needed, 1);
 
+  const settings = getProfileSettings(interaction.guild.id, target.id);
+
   const canvas = createCanvas(900, 300);
   const ctx = canvas.getContext("2d");
 
   const gradient = ctx.createLinearGradient(0, 0, 900, 300);
-  gradient.addColorStop(0, "#15152B");
-  gradient.addColorStop(1, "#7C3AED");
+  gradient.addColorStop(0, settings.secondary_colour);
+  gradient.addColorStop(1, settings.primary_colour);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, 900, 300);
 
@@ -50,7 +53,7 @@ async function execute(interaction) {
 
   const centerX = 535;
 
-  ctx.fillStyle = "#FFFFFF";
+  ctx.fillStyle = settings.text_colour;
   ctx.textAlign = "center";
 
   ctx.font = "42px Inter";
@@ -75,7 +78,7 @@ async function execute(interaction) {
   roundRect(ctx, barX, barY, barWidth, barHeight, 12);
   ctx.fill();
 
-  ctx.fillStyle = "#FFFFFF";
+  ctx.fillStyle = settings.text_colour;
   roundRect(ctx, barX, barY, barWidth * percent, barHeight, 12);
   ctx.fill();
 
