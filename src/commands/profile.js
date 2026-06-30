@@ -1,6 +1,18 @@
 const { AttachmentBuilder } = require("discord.js");
-const { createCanvas, loadImage } = require("@napi-rs/canvas");
+const path = require("path");
+
+const {
+  createCanvas,
+  loadImage,
+  GlobalFonts
+} = require("@napi-rs/canvas");
 const { getRank, getUserPosition, xpNeeded } = require("../features/levels");
+const fontLoaded = GlobalFonts.registerFromPath(
+  path.join(__dirname, "../assets/fonts/Inter-Bold.ttf"),
+  "Inter"
+);
+
+console.log("Inter font loaded:", fontLoaded);
 
 async function execute(interaction) {
   await interaction.deferReply();
@@ -42,7 +54,7 @@ async function execute(interaction) {
   // Text
   ctx.fillStyle = "#FFFFFF";
 
-  ctx.font = "bold 42px sans-serif";
+  ctx.font = "bold 42px Inter";
   console.log("Username:", target.username);
 
 ctx.fillStyle = "#ff0000";
@@ -50,7 +62,7 @@ ctx.fillRect(270, 70, 250, 50);
 
 ctx.fillText("TEST", 270, 95);
 
-  ctx.font = "28px sans-serif";
+  ctx.font = "28px Inter";
   ctx.fillText(`Rank #${position || "Unranked"}`, 270, 145);
   ctx.fillText(`Level ${stats.level}`, 270, 185);
   ctx.fillText(`${stats.xp} / ${needed} XP`, 270, 225);
@@ -66,7 +78,7 @@ ctx.fillText("TEST", 270, 95);
   ctx.fill();
 
   // Footer
-  ctx.font = "20px sans-serif";
+  ctx.font = "20px Inter";
   ctx.fillStyle = "rgba(255,255,255,0.8)";
   ctx.fillText(`Messages counted: ${stats.messages}`, 270, 278);
 
