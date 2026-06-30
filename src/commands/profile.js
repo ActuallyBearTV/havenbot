@@ -49,7 +49,7 @@ async function execute(interaction) {
 
       if (fs.existsSync(backgroundPath)) {
         const bg = await loadImage(backgroundPath);
-        ctx.drawImage(bg, 0, 0, 900, 300);
+        drawCoverImage(ctx, bg, 0, 0, 900, 300);
         backgroundDrawn = true;
       }
     } catch (err) {
@@ -79,13 +79,43 @@ async function execute(interaction) {
     })
   );
 
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(150, 150, 85, 0, Math.PI * 2);
-  ctx.closePath();
-  ctx.clip();
-  ctx.drawImage(avatar, 65, 65, 170, 170);
-  ctx.restore();
+  // Avatar glow
+ctx.save();
+
+ctx.shadowColor = settings.primary_colour;
+ctx.shadowBlur = 35;
+
+ctx.strokeStyle = settings.primary_colour;
+ctx.lineWidth = 8;
+
+ctx.beginPath();
+ctx.arc(150, 150, 90, 0, Math.PI * 2);
+ctx.stroke();
+
+ctx.restore();
+
+// White border
+ctx.save();
+
+ctx.strokeStyle = "rgba(255,255,255,0.85)";
+ctx.lineWidth = 4;
+
+ctx.beginPath();
+ctx.arc(150, 150, 87, 0, Math.PI * 2);
+ctx.stroke();
+
+ctx.restore();
+
+// Avatar
+ctx.save();
+ctx.beginPath();
+ctx.arc(150, 150, 85, 0, Math.PI * 2);
+ctx.closePath();
+ctx.clip();
+
+ctx.drawImage(avatar, 65, 65, 170, 170);
+
+ctx.restore();
 
   const centerX = 535;
 
@@ -141,7 +171,35 @@ ctx.fillText(`Messages: ${stats.messages}`, centerX, 220);
     files: [attachment]
   });
 }
+function drawCoverImage(ctx, image, x, y, width, height) {
+  const imageRatio = image.width / image.height;
+  const canvasRatio = width / height;
 
+  let sourceX = 0;
+  let sourceY = 0;
+  let sourceWidth = image.width;
+  let sourceHeight = image.height;
+
+  if (imageRatio > canvasRatio) {
+    sourceWidth = image.height * canvasRatio;
+    sourceX = (image.width - sourceWidth) / 2;
+  } else {
+    sourceHeight = image.width / canvasRatio;
+    sourceY = (image.height - sourceHeight) / 2;
+  }
+
+  ctx.drawImage(
+    image,
+    sourceX,
+    sourceY,
+    sourceWidth,
+    sourceHeight,
+    x,
+    y,
+    width,
+    height
+  );
+}
 function roundRect(ctx, x, y, width, height, radius) {
   ctx.beginPath();
   ctx.moveTo(x + radius, y);
