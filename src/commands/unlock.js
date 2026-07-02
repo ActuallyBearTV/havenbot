@@ -26,15 +26,17 @@ module.exports = {
 
     for (const roleId of staffRoleIds) {
       await channel.permissionOverwrites.edit(roleId, {
-        SendMessages: null,
-        SendMessagesInThreads: null,
-        CreatePublicThreads: null,
-        CreatePrivateThreads: null
-      }).catch(() => null);
+        ViewChannel: true,
+        ReadMessageHistory: true,
+        SendMessages: true,
+        SendMessagesInThreads: true,
+        CreatePublicThreads: true,
+        CreatePrivateThreads: true
+      }).catch(console.error);
     }
 
     await interaction.reply({
-      content: `🔓 ${channel} has been unlocked.`
+      content: `🔓 ${channel} has been unlocked. Staff can still talk.`
     });
 
     await sendStaffLog(interaction.guild, {
