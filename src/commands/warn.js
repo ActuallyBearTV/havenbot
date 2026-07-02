@@ -7,9 +7,10 @@ const warningsPath = path.join(__dirname, "..", "data", "warnings.json");
 
 // Put your role IDs here
 const allowedRoles = [
-  "TRIAL_MOD_ROLE_ID",
-  "MOD_ROLE_ID",
-  "ADMIN_ROLE_ID"
+  "1521148642419933305", //Trial Mod
+  "1521148641325223936", // Mod
+  "1521148638556983428", //Admin
+  "1521148639559553044" // Senior Moderator
 ];
 
 function loadWarnings() {
