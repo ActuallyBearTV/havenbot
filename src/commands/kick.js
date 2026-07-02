@@ -1,25 +1,35 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
 const { sendStaffLog } = require("../utils/staffLogs");
+
+const allowedRoles = [
+  "1521148641325223936", // Moderator
+  "1521148639559553044", // Senior Moderator
+  "1521148638556983428"  // Admin
+];
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("kick")
     .setDescription("Kick a member from the server.")
     .addUserOption(option =>
-      option
-        .setName("user")
-        .setDescription("The member to kick")
-        .setRequired(true)
+      option.setName("user").setDescription("The member to kick").setRequired(true)
     )
     .addStringOption(option =>
-      option
-        .setName("reason")
-        .setDescription("Reason for the kick")
-        .setRequired(false)
-    )
-    .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
+      option.setName("reason").setDescription("Reason for the kick").setRequired(false)
+    ),
 
   async execute(interaction) {
+    const hasAllowedRole = interaction.member.roles.cache.some(role =>
+      allowedRoles.includes(role.id)
+    );
+
+    if (!hasAllowedRole) {
+      return interaction.reply({
+        content: "❌ You don't have permission to use this command.",
+        ephemeral: true
+      });
+    }
+
     const user = interaction.options.getUser("user");
     const reason = interaction.options.getString("reason") || "No reason provided";
 
