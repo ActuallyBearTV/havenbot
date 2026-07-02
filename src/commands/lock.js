@@ -18,6 +18,8 @@ module.exports = {
     const channel = interaction.channel;
 
     await channel.permissionOverwrites.edit(interaction.guild.roles.everyone, {
+      ViewChannel: null,
+      ReadMessageHistory: null,
       SendMessages: false,
       SendMessagesInThreads: false,
       CreatePublicThreads: false,
@@ -32,7 +34,7 @@ module.exports = {
         SendMessagesInThreads: true,
         CreatePublicThreads: true,
         CreatePrivateThreads: true
-      }).catch(console.error);
+      });
     }
 
     await interaction.reply({
