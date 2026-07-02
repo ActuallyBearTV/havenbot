@@ -1,9 +1,16 @@
 const fs = require("node:fs");
 const path = require("node:path");
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
 const { sendStaffLog } = require("../utils/staffLogs");
 
 const warningsPath = path.join(__dirname, "..", "data", "warnings.json");
+
+// Put your role IDs here
+const allowedRoles = [
+  "TRIAL_MOD_ROLE_ID",
+  "MOD_ROLE_ID",
+  "ADMIN_ROLE_ID"
+];
 
 function loadWarnings() {
   if (!fs.existsSync(warningsPath)) return {};
@@ -23,10 +30,20 @@ module.exports = {
     )
     .addStringOption(option =>
       option.setName("reason").setDescription("Reason for the warning").setRequired(true)
-    )
-    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+    ),
 
   async execute(interaction) {
+    const hasAllowedRole = interaction.member.roles.cache.some(role =>
+      allowedRoles.includes(role.id)
+    );
+
+    if (!hasAllowedRole) {
+      return interaction.reply({
+        content: "❌ You don't have permission to use this command.",
+        ephemeral: true
+      });
+    }
+
     const user = interaction.options.getUser("user");
     const reason = interaction.options.getString("reason");
 
