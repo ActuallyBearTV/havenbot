@@ -15,16 +15,27 @@ module.exports = {
       });
     }
 
+    await interaction.deferReply();
+
     const channel = interaction.channel;
 
     await channel.permissionOverwrites.edit(interaction.guild.roles.everyone, {
-      ViewChannel: null,
-      ReadMessageHistory: null,
-      SendMessages: true,
-      SendMessagesInThreads: true,
-      CreatePublicThreads: true,
-      CreatePrivateThreads: true
+      SendMessages: null,
+      SendMessagesInThreads: null,
+      CreatePublicThreads: null,
+      CreatePrivateThreads: null
     });
+
+    for (const role of interaction.guild.roles.cache.values()) {
+      if (role.id === interaction.guild.id || role.managed) continue;
+
+      await channel.permissionOverwrites.edit(role, {
+        SendMessages: null,
+        SendMessagesInThreads: null,
+        CreatePublicThreads: null,
+        CreatePrivateThreads: null
+      }).catch(() => null);
+    }
 
     for (const roleId of staffRoleIds) {
       await channel.permissionOverwrites.edit(roleId, {
@@ -34,16 +45,16 @@ module.exports = {
         SendMessagesInThreads: true,
         CreatePublicThreads: true,
         CreatePrivateThreads: true
-      });
+      }).catch(() => null);
     }
 
-    await interaction.reply({
-      content: `🔓 ${channel} has been unlocked. Everyone can talk again.`
+    await interaction.editReply({
+      content: `🔓 ${channel} has been fully unlocked. Everyone should be able to talk again.`
     });
 
     await sendStaffLog(interaction.guild, {
       title: "🔓 Channel Unlocked",
-      description: `${interaction.user} unlocked ${channel}.`,
+      description: `${interaction.user} fully unlocked ${channel}.`,
       staff: interaction.user,
       extra: `**Channel:** ${channel}`,
       color: "#57F287"
