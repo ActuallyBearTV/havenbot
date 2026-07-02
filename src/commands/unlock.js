@@ -1,12 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { sendStaffLog } = require("../utils/staffLogs");
-
-const allowedRoles = [
-  "1521148642419933305", // Trial Mod
-  "1521148641325223936", // Moderator
-  "1521148639559553044", // Senior Moderator
-  "1521148638556983428"  // Admin
-];
+const { hasStaffPermission, staffRoleIds } = require("../utils/staffPermissions");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,18 +8,18 @@ module.exports = {
     .setDescription("Unlock this channel."),
 
   async execute(interaction) {
-    const hasAllowedRole = interaction.member.roles.cache.some(role =>
-      allowedRoles.includes(role.id)
-    );
-
-    if (!hasAllowedRole) {
+    if (!hasStaffPermission(interaction)) {
       return interaction.reply({
         content: "❌ You don't have permission to use this command.",
         ephemeral: true
       });
     }
 
-    await interaction.channel.permissionOverwrites.edit(
+    await interaction.deferReply();
+
+    const channel = interaction.channel;
+
+    await channel.permissionOverwrites.edit(
       interaction.guild.roles.everyone,
       {
         SendMessages: null,
@@ -35,15 +29,30 @@ module.exports = {
       }
     );
 
-    await interaction.reply({
-      content: `🔓 ${interaction.channel} has been unlocked.`
+    for (const role of interaction.guild.roles.cache.values()) {
+      if (
+        role.id === interaction.guild.id ||
+        role.managed ||
+        staffRoleIds.includes(role.id)
+      ) continue;
+
+      await channel.permissionOverwrites.edit(role, {
+        SendMessages: null,
+        SendMessagesInThreads: null,
+        CreatePublicThreads: null,
+        CreatePrivateThreads: null
+      }).catch(() => null);
+    }
+
+    await interaction.editReply({
+      content: `🔓 ${channel} has been unlocked.`
     });
 
     await sendStaffLog(interaction.guild, {
       title: "🔓 Channel Unlocked",
-      description: `${interaction.user} unlocked ${interaction.channel}.`,
+      description: `${interaction.user} unlocked ${channel}.`,
       staff: interaction.user,
-      extra: `**Channel:** ${interaction.channel}`,
+      extra: `**Channel:** ${channel}`,
       color: "#57F287"
     });
   }
