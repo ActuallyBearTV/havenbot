@@ -26,11 +26,13 @@ module.exports = {
 
     for (const roleId of staffRoleIds) {
       await channel.permissionOverwrites.edit(roleId, {
+        ViewChannel: true,
+        ReadMessageHistory: true,
         SendMessages: true,
         SendMessagesInThreads: true,
         CreatePublicThreads: true,
         CreatePrivateThreads: true
-      }).catch(() => null);
+      }).catch(console.error);
     }
 
     await interaction.reply({
