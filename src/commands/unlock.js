@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { sendStaffLog } = require("../utils/staffLogs");
-const { hasStaffPermission } = require("../utils/staffPermissions");
+const { hasStaffPermission, staffRoleIds } = require("../utils/staffPermissions");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -23,6 +23,15 @@ module.exports = {
       CreatePublicThreads: null,
       CreatePrivateThreads: null
     });
+
+    for (const roleId of staffRoleIds) {
+      await channel.permissionOverwrites.edit(roleId, {
+        SendMessages: null,
+        SendMessagesInThreads: null,
+        CreatePublicThreads: null,
+        CreatePrivateThreads: null
+      }).catch(() => null);
+    }
 
     await interaction.reply({
       content: `🔓 ${channel} has been unlocked.`
