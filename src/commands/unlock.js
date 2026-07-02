@@ -18,10 +18,12 @@ module.exports = {
     const channel = interaction.channel;
 
     await channel.permissionOverwrites.edit(interaction.guild.roles.everyone, {
-      SendMessages: null,
-      SendMessagesInThreads: null,
-      CreatePublicThreads: null,
-      CreatePrivateThreads: null
+      ViewChannel: null,
+      ReadMessageHistory: null,
+      SendMessages: true,
+      SendMessagesInThreads: true,
+      CreatePublicThreads: true,
+      CreatePrivateThreads: true
     });
 
     for (const roleId of staffRoleIds) {
@@ -32,11 +34,11 @@ module.exports = {
         SendMessagesInThreads: true,
         CreatePublicThreads: true,
         CreatePrivateThreads: true
-      }).catch(console.error);
+      });
     }
 
     await interaction.reply({
-      content: `🔓 ${channel} has been unlocked. Staff can still talk.`
+      content: `🔓 ${channel} has been unlocked. Everyone can talk again.`
     });
 
     await sendStaffLog(interaction.guild, {
