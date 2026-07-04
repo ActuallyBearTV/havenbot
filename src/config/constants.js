@@ -16,7 +16,9 @@ const COLOUR_ROLES = [
 const OPTIONAL_PINGS = [
   { name: "💗 Chat Revive", id: "ping_chat_revive" },
   { name: "🎙️ VC Revive", id: "ping_vc_revive" },
-  { name: "❓ Daily Question", id: "ping_daily_question" }
+  { name: "❓ Daily Question", id: "ping_daily_question" },
+  { name: "📢 Announcement Ping", id: "ping_announcement" },
+  { name: "🚀 Bump Reminder", id: "ping_bump_reminder" }
 ];
 const SELF_ROLES = [
   { name: "♂️ Male", id: "gender_male", group: "gender" },
