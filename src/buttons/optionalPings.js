@@ -2,9 +2,28 @@ const { OPTIONAL_PINGS } = require("../config/constants");
 const { findRole } = require("../utils/finders");
 
 async function toggleOptionalPing(interaction) {
-  const selectedPing = OPTIONAL_PINGS.find(
-    ping => ping.id === interaction.customId
-  );
+  onst OPTIONAL_PINGS = [
+  {
+    id: "ping_chat_revive",
+    name: "💗 Chat Revive"
+  },
+  {
+    id: "ping_vc_revive",
+    name: "🎙️ VC Revive"
+  },
+  {
+    id: "ping_daily_question",
+    name: "❓ Daily Question"
+  },
+  {
+    id: "ping_announcement",
+    name: "📢 Announcement Ping"
+  },
+  {
+    id: "ping_bump_reminder",
+    name: "🚀 Bump Reminder"
+  }
+];
 
   if (!selectedPing) return;
 
