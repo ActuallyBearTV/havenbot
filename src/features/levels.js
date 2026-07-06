@@ -1,6 +1,6 @@
 const db = require("../database/database");
 
-const LEVELS_CHANNEL_ID = "PUT_LEVELS_CHANNEL_ID_HERE";
+const LEVELS_CHANNEL_ID = "1521148752759361648";
 
 db.prepare(`
   CREATE TABLE IF NOT EXISTS levels (
