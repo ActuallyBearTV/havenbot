@@ -86,14 +86,19 @@ if (reward) {
   }
 
   await message.channel.send({
-    content: `🎉 GG ${message.author}, you reached **Level ${level}** and earned ${role}!`
-  });
+  content: `🎉 GG ${message.author}, you reached **Level ${level}** and earned ${role}!`,
+  allowedMentions: {
+    users: [message.author.id],
+    roles: []
+  }
+});
 } else {
   await message.channel.send({
-    content: `🎉 GG ${message.author}, you reached **Level ${level}**!`
-  });
-}
+  content: `🎉 GG ${message.author}, you reached **Level ${level}**!`,
+  allowedMentions: {
+    users: [message.author.id]
   }
+});
 
   db.prepare(`
     UPDATE levels
