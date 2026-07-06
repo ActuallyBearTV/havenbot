@@ -1,185 +1,142 @@
-const { EmbedBuilder, AuditLogEvent } = require("discord.js");
+const { sendStaffLog } = require("../utils/staffLogs");
 
-const STAFF_LOG_CHANNEL_NAME = "•₊˚๑🌷│staff-logsˎˊ˗";
-
-function getStaffLogChannel(guild) {
-  return guild.channels.cache.find(
-    channel => channel.name === STAFF_LOG_CHANNEL_NAME
-  );
-}
-
-async function sendStaffLog(guild, title, description, color = 0xffb6c1) {
-  const channel = getStaffLogChannel(guild);
-  if (!channel) return;
-
-  const embed = new EmbedBuilder()
-    .setTitle(title)
-    .setDescription(description)
-    .setColor(color)
-    .setTimestamp();
-
-  await channel.send({ embeds: [embed] }).catch(() => {});
+function trimText(text, max = 1000) {
+  if (!text) return "*No text content / attachment only*";
+  return text.length > max ? text.slice(0, max) + "..." : text;
 }
 
 function setupStaffLogs(client) {
   client.on("messageDelete", async message => {
     if (!message.guild || message.author?.bot) return;
 
-    await sendStaffLog(
-      message.guild,
-      "🗑️ Message Deleted",
-      [
-        `**User:** ${message.author} (${message.author.tag})`,
-        `**Channel:** ${message.channel}`,
-        "",
-        `**Message:**`,
-        message.content || "*No text content / attachment only*"
-      ].join("\n"),
-      0xff6b6b
-    );
+    await sendStaffLog(message.guild, {
+      title: "🗑️ Message Deleted",
+      description: `A message was deleted in ${message.channel}.`,
+      user: message.author,
+      extra:
+        `👤 **User:** ${message.author} (${message.author.tag})\n` +
+        `📍 **Channel:** ${message.channel}\n\n` +
+        `💬 **Message:**\n${trimText(message.content)}`,
+      color: "#EF4444"
+    });
   });
 
   client.on("messageUpdate", async (oldMessage, newMessage) => {
     if (!oldMessage.guild || oldMessage.author?.bot) return;
     if (oldMessage.content === newMessage.content) return;
 
-    await sendStaffLog(
-      oldMessage.guild,
-      "✏️ Message Edited",
-      [
-        `**User:** ${oldMessage.author} (${oldMessage.author.tag})`,
-        `**Channel:** ${oldMessage.channel}`,
-        "",
-        `**Before:**`,
-        oldMessage.content || "*No text content*",
-        "",
-        `**After:**`,
-        newMessage.content || "*No text content*"
-      ].join("\n"),
-      0xffc857
-    );
-  });
-
-  client.on("guildMemberAdd", async member => {
-    await sendStaffLog(
-      member.guild,
-      "📥 Member Joined",
-      `**User:** ${member.user} (${member.user.tag})`,
-      0x77dd77
-    );
-  });
-
-  client.on("guildMemberRemove", async member => {
-    await sendStaffLog(
-      member.guild,
-      "📤 Member Left",
-      `**User:** ${member.user} (${member.user.tag})`,
-      0xff9aa2
-    );
+    await sendStaffLog(oldMessage.guild, {
+      title: "✏️ Message Edited",
+      description: `A message was edited in ${oldMessage.channel}.`,
+      user: oldMessage.author,
+      extra:
+        `👤 **User:** ${oldMessage.author} (${oldMessage.author.tag})\n` +
+        `📍 **Channel:** ${oldMessage.channel}\n\n` +
+        `**Before:**\n${trimText(oldMessage.content)}\n\n` +
+        `**After:**\n${trimText(newMessage.content)}`,
+      color: "#F59E0B"
+    });
   });
 
   client.on("guildBanAdd", async ban => {
-    await sendStaffLog(
-      ban.guild,
-      "🔨 Member Banned",
-      `**User:** ${ban.user} (${ban.user.tag})`,
-      0xff0000
-    );
+    await sendStaffLog(ban.guild, {
+      title: "🔨 Member Banned",
+      description: `${ban.user} was banned from the server.`,
+      user: ban.user,
+      extra: `👤 **User:** ${ban.user.tag}`,
+      color: "#DC2626"
+    });
   });
 
   client.on("guildBanRemove", async ban => {
-    await sendStaffLog(
-      ban.guild,
-      "🔓 Member Unbanned",
-      `**User:** ${ban.user} (${ban.user.tag})`,
-      0x77dd77
+    await sendStaffLog(ban.guild, {
+      title: "🔓 Member Unbanned",
+      description: `${ban.user} was unbanned from the server.`,
+      user: ban.user,
+      extra: `👤 **User:** ${ban.user.tag}`,
+      color: "#22C55E"
+    });
+  });
+
+  client.on("guildMemberUpdate", async (oldMember, newMember) => {
+    if (oldMember.nickname !== newMember.nickname) {
+      await sendStaffLog(newMember.guild, {
+        title: "📝 Nickname Changed",
+        description: `${newMember.user} changed nickname.`,
+        user: newMember.user,
+        extra:
+          `**Before:** ${oldMember.nickname || oldMember.user.username}\n` +
+          `**After:** ${newMember.nickname || newMember.user.username}`,
+        color: "#F59E0B"
+      });
+    }
+
+    const addedRoles = newMember.roles.cache.filter(
+      role => !oldMember.roles.cache.has(role.id)
     );
+
+    const removedRoles = oldMember.roles.cache.filter(
+      role => !newMember.roles.cache.has(role.id)
+    );
+
+    if (addedRoles.size > 0) {
+      await sendStaffLog(newMember.guild, {
+        title: "✅ Role Added",
+        description: `${newMember.user} was given a role.`,
+        user: newMember.user,
+        extra: `🎭 **Role:** ${addedRoles.map(role => role.name).join(", ")}`,
+        color: "#22C55E"
+      });
+    }
+
+    if (removedRoles.size > 0) {
+      await sendStaffLog(newMember.guild, {
+        title: "❌ Role Removed",
+        description: `${newMember.user} had a role removed.`,
+        user: newMember.user,
+        extra: `🎭 **Role:** ${removedRoles.map(role => role.name).join(", ")}`,
+        color: "#EF4444"
+      });
+    }
   });
 
   client.on("channelCreate", async channel => {
     if (!channel.guild) return;
 
-    await sendStaffLog(
-      channel.guild,
-      "➕ Channel Created",
-      `**Channel:** ${channel}`,
-      0x77dd77
-    );
+    await sendStaffLog(channel.guild, {
+      title: "➕ Channel Created",
+      description: `A channel was created: ${channel}`,
+      color: "#22C55E"
+    });
   });
 
   client.on("channelDelete", async channel => {
     if (!channel.guild) return;
 
-    await sendStaffLog(
-      channel.guild,
-      "➖ Channel Deleted",
-      `**Channel Name:** ${channel.name}`,
-      0xff6b6b
-    );
+    await sendStaffLog(channel.guild, {
+      title: "➖ Channel Deleted",
+      description: `A channel was deleted: **${channel.name}**`,
+      color: "#EF4444"
+    });
   });
 
   client.on("roleCreate", async role => {
-    await sendStaffLog(
-      role.guild,
-      "➕ Role Created",
-      `**Role:** ${role.name}`,
-      0x77dd77
-    );
+    await sendStaffLog(role.guild, {
+      title: "➕ Role Created",
+      description: `A role was created: **${role.name}**`,
+      color: "#22C55E"
+    });
   });
 
   client.on("roleDelete", async role => {
-    await sendStaffLog(
-      role.guild,
-      "➖ Role Deleted",
-      `**Role:** ${role.name}`,
-      0xff6b6b
-    );
-  });
-
-  client.on("guildMemberUpdate", async (oldMember, newMember) => {
-    if (oldMember.nickname !== newMember.nickname) {
-      await sendStaffLog(
-        newMember.guild,
-        "📝 Nickname Changed",
-        [
-          `**User:** ${newMember.user} (${newMember.user.tag})`,
-          `**Before:** ${oldMember.nickname || oldMember.user.username}`,
-          `**After:** ${newMember.nickname || newMember.user.username}`
-        ].join("\n"),
-        0xffc857
-      );
-    }
-
-    const oldRoles = oldMember.roles.cache;
-    const newRoles = newMember.roles.cache;
-
-    const addedRoles = newRoles.filter(role => !oldRoles.has(role.id));
-    const removedRoles = oldRoles.filter(role => !newRoles.has(role.id));
-
-    if (addedRoles.size > 0) {
-      await sendStaffLog(
-        newMember.guild,
-        "✅ Role Added",
-        [
-          `**User:** ${newMember.user} (${newMember.user.tag})`,
-          `**Role:** ${addedRoles.map(role => role.name).join(", ")}`
-        ].join("\n"),
-        0x77dd77
-      );
-    }
-
-    if (removedRoles.size > 0) {
-      await sendStaffLog(
-        newMember.guild,
-        "❌ Role Removed",
-        [
-          `**User:** ${newMember.user} (${newMember.user.tag})`,
-          `**Role:** ${removedRoles.map(role => role.name).join(", ")}`
-        ].join("\n"),
-        0xff6b6b
-      );
-    }
+    await sendStaffLog(role.guild, {
+      title: "➖ Role Deleted",
+      description: `A role was deleted: **${role.name}**`,
+      color: "#EF4444"
+    });
   });
 }
 
-module.exports = { setupStaffLogs };
+module.exports = {
+  setupStaffLogs
+};
