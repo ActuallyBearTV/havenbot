@@ -6,6 +6,7 @@ const {
   Partials
 } = require("discord.js");
 
+const { setupStaffLogs } = require("./src/events/staffLogs");
 const { handleStarboard } = require("./src/features/starboard");
 const quoteCommand = require("./src/commands/quote");
 
