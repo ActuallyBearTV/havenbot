@@ -85,21 +85,22 @@ if (reward) {
     await member.roles.add(reward.roleId);
   }
 
+  if (role) {
   await message.channel.send({
-  content: `🎉 GG ${message.author}, you reached **Level ${level}** and earned ${role}!`,
-  allowedMentions: {
-    users: [message.author.id],
-    roles: []
-  }
-});
+    content: `🎉 GG ${message.author}, you reached **Level ${level}** and earned **${role.name}**!`,
+    allowedMentions: {
+      users: [message.author.id],
+      roles: []
+    }
+  });
 } else {
   await message.channel.send({
-  content: `🎉 GG ${message.author}, you reached **Level ${level}**!`,
-  allowedMentions: {
-    users: [message.author.id]
-  }
-});
-
+    content: `🎉 GG ${message.author}, you reached **Level ${level}**!`,
+    allowedMentions: {
+      users: [message.author.id]
+    }
+  });
+}
   db.prepare(`
     UPDATE levels
     SET xp = ?, level = ?, messages = ?
