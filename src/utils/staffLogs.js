@@ -1,49 +1,37 @@
-// src/utils/staffLogs.js
 const { EmbedBuilder } = require("discord.js");
 
-const STAFF_LOG_CHANNEL_ID = process.env.STAFF_LOG_CHANNEL_ID;
+const STAFF_LOG_CHANNEL_NAME = "•₊˚๑🌷│staff-logsˎˊ˗";
+
+function findStaffLogChannel(guild) {
+  return guild.channels.cache.find(
+    channel => channel.name === STAFF_LOG_CHANNEL_NAME
+  );
+}
 
 async function sendStaffLog(guild, options) {
-  if (!guild || !STAFF_LOG_CHANNEL_ID) return;
-
-  const channel = guild.channels.cache.get(STAFF_LOG_CHANNEL_ID);
+  const channel = findStaffLogChannel(guild);
   if (!channel) return;
 
   const embed = new EmbedBuilder()
-  .setColor(options.color || "#2b6cff")
-  .setTitle(options.title || "Staff Log")
-  .setDescription(options.description || "No details provided.")
-  .setTimestamp();
-
-if (options.user) {
-  embed.setThumbnail(options.user.displayAvatarURL({ dynamic: true }));
-}
+    .setTitle(options.title || "Staff Log")
+    .setDescription(options.description || "No description provided.")
+    .setColor(options.color || "#FFB6C1")
+    .setTimestamp();
 
   if (options.user) {
-    embed.addFields({
-      name: "User",
-      value: `${options.user} \`${options.user.id}\``,
-      inline: false
-    });
-  }
-
-  if (options.staff) {
-    embed.addFields({
-      name: "Staff",
-      value: `${options.staff} \`${options.staff.id}\``,
-      inline: false
-    });
+    embed.setThumbnail(options.user.displayAvatarURL({ dynamic: true }));
   }
 
   if (options.extra) {
     embed.addFields({
-      name: "Details",
-      value: options.extra,
-      inline: false
+      name: "Extra Info",
+      value: options.extra
     });
   }
 
-  await channel.send({ embeds: [embed] });
+  await channel.send({ embeds: [embed] }).catch(console.error);
 }
 
-module.exports = { sendStaffLog };
+module.exports = {
+  sendStaffLog
+};
