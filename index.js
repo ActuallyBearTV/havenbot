@@ -116,8 +116,8 @@ client.on("interactionCreate", async interaction => {
         const suggestionText = interaction.fields.getTextInputValue("suggestion_text");
 
         const suggestionsChannel = interaction.guild.channels.cache.find(
-          channel => channel.name.includes("suggestions")
-        );
+  channel => channel.name === "•₊˚๑❔│suggestˎˊ˗"
+);
 
         if (!suggestionsChannel) {
           return interaction.reply({
