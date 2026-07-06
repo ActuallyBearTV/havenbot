@@ -1,5 +1,7 @@
 const db = require("../database/database");
 
+const LEVELS_CHANNEL_ID = "PUT_LEVELS_CHANNEL_ID_HERE";
+
 db.prepare(`
   CREATE TABLE IF NOT EXISTS levels (
     guild_id TEXT NOT NULL,
@@ -77,6 +79,9 @@ async function handleMessageXP(message) {
     xp -= needed;
     level += 1;
 
+    const levelChannel =
+      message.guild.channels.cache.get(LEVELS_CHANNEL_ID) || message.channel;
+
     const reward = getLevelReward(message.guild.id, level);
 
     if (reward) {
@@ -88,7 +93,7 @@ async function handleMessageXP(message) {
       }
 
       if (role) {
-        await message.channel.send({
+        await levelChannel.send({
           content: `🎉 GG ${message.author}, you reached **Level ${level}** and earned **${role.name}**!`,
           allowedMentions: {
             users: [message.author.id],
@@ -96,7 +101,7 @@ async function handleMessageXP(message) {
           }
         });
       } else {
-        await message.channel.send({
+        await levelChannel.send({
           content: `🎉 GG ${message.author}, you reached **Level ${level}**!`,
           allowedMentions: {
             users: [message.author.id]
@@ -104,7 +109,7 @@ async function handleMessageXP(message) {
         });
       }
     } else {
-      await message.channel.send({
+      await levelChannel.send({
         content: `🎉 GG ${message.author}, you reached **Level ${level}**!`,
         allowedMentions: {
           users: [message.author.id]
