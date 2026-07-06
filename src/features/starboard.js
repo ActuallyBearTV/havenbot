@@ -17,7 +17,7 @@ async function handleStarboard(reaction) {
   if (message.author.bot) return;
 
   const starboardChannel = message.guild.channels.cache.find(
-    channel => channel.name === "starboard" && channel.isTextBased()
+    channel => channel.name === "•₊˚๑🫐│starboardˎˊ˗" && channel.isTextBased()
   );
 
   if (!starboardChannel) return;
