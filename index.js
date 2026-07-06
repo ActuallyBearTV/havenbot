@@ -73,7 +73,8 @@ const client = new Client({
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildMessageReactions,
-    GatewayIntentBits.MessageContent
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildModeration
   ],
   partials: [
     Partials.Message,
@@ -344,5 +345,7 @@ client.on("guildMemberRemove", async member => {
     color: "#EF4444"
   });
 });
+
+setupStaffLogs(client);
 
 client.login(process.env.DISCORD_TOKEN);
