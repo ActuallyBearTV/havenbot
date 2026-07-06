@@ -1,4 +1,5 @@
 const db = require("../database/database");
+
 db.prepare(`
   CREATE TABLE IF NOT EXISTS levels (
     guild_id TEXT NOT NULL,
@@ -9,6 +10,7 @@ db.prepare(`
     PRIMARY KEY (guild_id, user_id)
   )
 `).run();
+
 db.prepare(`
   CREATE TABLE IF NOT EXISTS level_rewards (
     guild_id TEXT NOT NULL,
@@ -77,30 +79,40 @@ async function handleMessageXP(message) {
 
     const reward = getLevelReward(message.guild.id, level);
 
-if (reward) {
-  const member = await message.guild.members.fetch(message.author.id);
-  const role = message.guild.roles.cache.get(reward.roleId);
+    if (reward) {
+      const member = await message.guild.members.fetch(message.author.id);
+      const role = message.guild.roles.cache.get(reward.roleId);
 
-  if (role && !member.roles.cache.has(reward.roleId)) {
-    await member.roles.add(reward.roleId);
+      if (role && !member.roles.cache.has(reward.roleId)) {
+        await member.roles.add(reward.roleId);
+      }
+
+      if (role) {
+        await message.channel.send({
+          content: `🎉 GG ${message.author}, you reached **Level ${level}** and earned **${role.name}**!`,
+          allowedMentions: {
+            users: [message.author.id],
+            roles: []
+          }
+        });
+      } else {
+        await message.channel.send({
+          content: `🎉 GG ${message.author}, you reached **Level ${level}**!`,
+          allowedMentions: {
+            users: [message.author.id]
+          }
+        });
+      }
+    } else {
+      await message.channel.send({
+        content: `🎉 GG ${message.author}, you reached **Level ${level}**!`,
+        allowedMentions: {
+          users: [message.author.id]
+        }
+      });
+    }
   }
 
-  if (role) {
-  await message.channel.send({
-    content: `🎉 GG ${message.author}, you reached **Level ${level}** and earned **${role.name}**!`,
-    allowedMentions: {
-      users: [message.author.id],
-      roles: []
-    }
-  });
-} else {
-  await message.channel.send({
-    content: `🎉 GG ${message.author}, you reached **Level ${level}**!`,
-    allowedMentions: {
-      users: [message.author.id]
-    }
-  });
-}
   db.prepare(`
     UPDATE levels
     SET xp = ?, level = ?, messages = ?
@@ -121,6 +133,7 @@ function getLeaderboard(guildId) {
     LIMIT 10
   `).all(guildId);
 }
+
 function getUserPosition(guildId, userId) {
   const leaderboard = db.prepare(`
     SELECT user_id AS userId
@@ -133,6 +146,7 @@ function getUserPosition(guildId, userId) {
 
   return index === -1 ? null : index + 1;
 }
+
 function saveLevelReward(guildId, level, roleId) {
   db.prepare(`
     INSERT INTO level_rewards (guild_id, level, role_id)
@@ -149,6 +163,7 @@ function getLevelReward(guildId, level) {
     WHERE guild_id = ? AND level = ?
   `).get(guildId, level);
 }
+
 module.exports = {
   handleMessageXP,
   getRank,
