@@ -1,5 +1,4 @@
 const { COLOUR_ROLES } = require("../config/constants");
-const { findRole } = require("../utils/finders");
 
 async function toggleColourRole(interaction) {
   const selectedColour = COLOUR_ROLES.find(
@@ -8,19 +7,18 @@ async function toggleColourRole(interaction) {
 
   if (!selectedColour) return;
 
-  const selectedRole = findRole(interaction.guild, selectedColour.name);
+  const selectedRole = interaction.guild.roles.cache.get(selectedColour.roleId);
 
   if (!selectedRole) {
     return interaction.reply({
-      content: "That colour role does not exist yet. Ask staff to run `/setup-colour-roles`.",
+      content: "That colour role does not exist. Check the role ID in `roles.js`.",
       ephemeral: true
     });
   }
 
   const colourRoleIds = COLOUR_ROLES
-    .map(colour => findRole(interaction.guild, colour.name))
-    .filter(Boolean)
-    .map(role => role.id);
+    .map(colour => colour.roleId)
+    .filter(Boolean);
 
   const rolesToRemove = interaction.member.roles.cache
     .filter(role => colourRoleIds.includes(role.id) && role.id !== selectedRole.id)
