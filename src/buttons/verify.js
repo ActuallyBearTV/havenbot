@@ -2,7 +2,7 @@ const { sendStaffLog } = require("../utils/staffLogs");
 const { findRole } = require("../utils/finders");
 
 async function verifyMember(interaction) {
-  const role = findRole(interaction.guild, "✅ Verified");
+  const role = findRole(interaction.guild, "✰* member *✰");
 
   if (!role) {
     return interaction.reply({
