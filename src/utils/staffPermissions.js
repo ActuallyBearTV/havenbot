@@ -1,10 +1,14 @@
 const { PermissionFlagsBits } = require("discord.js");
+const Roles = require("../config/roles");
 
 const staffRoleIds = [
-  "1521148642419933305", // Trial Mod
-  "1521148641325223936", // Moderator
-  "1521148639559553044", // Senior Moderator
-  "1521148638556983428"  // Admin
+  Roles.STAFF.TRIAL_MOD,
+  Roles.STAFF.MODERATOR,
+  Roles.STAFF.SENIOR_MODERATOR,
+  Roles.STAFF.ADMIN,
+  Roles.STAFF.MANAGEMENT,
+  Roles.STAFF.CO_OWNER,
+  Roles.STAFF.OWNER
 ];
 
 function hasStaffPermission(interaction) {
