@@ -10,6 +10,10 @@ const {
 } = require("discord.js");
 
 const commands = [
+  new SlashCommandBuilder()
+  .setName("exportids")
+  .setDescription("Export all IDs.")
+  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     new SlashCommandBuilder()
     .setName("listroles")
     .setDescription("List every role and its ID.")
