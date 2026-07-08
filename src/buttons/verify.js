@@ -6,7 +6,7 @@ async function verifyMember(interaction) {
 
   if (!role) {
     return interaction.reply({
-      content: "❌ I couldn't find the **✅ Verified** role.",
+      content: "❌ I couldn't find the **✰* member *✰** role.",
       ephemeral: true
     });
   }
