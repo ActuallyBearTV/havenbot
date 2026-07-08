@@ -12,10 +12,29 @@ const {
 const commands = [
   new SlashCommandBuilder()
   .setName("giverole")
-  .setDescription("Give a role to one member or everyone.")
+  .setDescription("Give up to 5 roles to one member or everyone.")
   .addRoleOption(option =>
-    option.setName("role").setDescription("Role").setRequired(true)
+    option.setName("role1").setDescription("First role").setRequired(true)
   )
+  .addRoleOption(option =>
+    option.setName("role2").setDescription("Second role").setRequired(false)
+  )
+  .addRoleOption(option =>
+    option.setName("role3").setDescription("Third role").setRequired(false)
+  )
+  .addRoleOption(option =>
+    option.setName("role4").setDescription("Fourth role").setRequired(false)
+  )
+  .addRoleOption(option =>
+    option.setName("role5").setDescription("Fifth role").setRequired(false)
+  )
+  .addUserOption(option =>
+    option.setName("user").setDescription("Member to give the roles to").setRequired(false)
+  )
+  .addBooleanOption(option =>
+    option.setName("everyone").setDescription("Give the roles to every non-bot member").setRequired(false)
+  )
+  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
   .addUserOption(option =>
     option.setName("user").setDescription("User").setRequired(false)
   )
