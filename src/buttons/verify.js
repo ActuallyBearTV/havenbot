@@ -2,23 +2,35 @@ const { sendStaffLog } = require("../utils/staffLogs");
 const Roles = require("../config/roles");
 
 async function verifyMember(interaction) {
-  const role = interaction.guild.roles.cache.get(Roles.MISC.MEMBER);
+  const roleIdsToAdd = [
+    Roles.MISC.MEMBER,
+    Roles.SEPARATORS.ABOUT_ME,
+    Roles.SEPARATORS.EXTRA_INFO,
+    Roles.SEPARATORS.PINGS,
+    Roles.SEPARATORS.ADDITIONAL
+  ].filter(Boolean);
 
-  if (!role) {
+  const missingRoles = roleIdsToAdd.filter(
+    roleId => !interaction.guild.roles.cache.has(roleId)
+  );
+
+  if (missingRoles.length > 0) {
     return interaction.reply({
-      content: "❌ I couldn't find the member role. Check `Roles.MISC.MEMBER` in `roles.js`.",
+      content: "❌ Some verification roles are missing. Check `roles.js`.",
       ephemeral: true
     });
   }
 
-  if (interaction.member.roles.cache.has(role.id)) {
+  const alreadyVerified = interaction.member.roles.cache.has(Roles.MISC.MEMBER);
+
+  if (alreadyVerified) {
     return interaction.reply({
       content: "✅ You're already verified!",
       ephemeral: true
     });
   }
 
-  await interaction.member.roles.add(role);
+  await interaction.member.roles.add(roleIdsToAdd);
 
   await sendStaffLog(interaction.guild, {
     title: "✅ Member Verified",
