@@ -1,5 +1,4 @@
 const { OPTIONAL_PINGS } = require("../config/constants");
-const { findRole } = require("../utils/finders");
 
 async function toggleOptionalPing(interaction) {
   const selectedPing = OPTIONAL_PINGS.find(
@@ -8,11 +7,11 @@ async function toggleOptionalPing(interaction) {
 
   if (!selectedPing) return;
 
-  const selectedRole = findRole(interaction.guild, selectedPing.name);
+  const selectedRole = interaction.guild.roles.cache.get(selectedPing.roleId);
 
   if (!selectedRole) {
     return interaction.reply({
-      content: "That notification role does not exist yet. Ask staff to run `/setup-optional-pings`.",
+      content: "That notification role doesn't exist. Check the role ID in `roles.js`.",
       ephemeral: true
     });
   }
