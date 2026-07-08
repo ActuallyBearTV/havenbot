@@ -5,7 +5,7 @@ const {
   GatewayIntentBits,
   Partials
 } = require("discord.js");
-
+const exportIdsCommand = require("./src/commands/exportids");
 const { setupStaffLogs } = require("./src/events/staffLogs");
 const { handleStarboard } = require("./src/features/starboard");
 const quoteCommand = require("./src/commands/quote");
@@ -262,7 +262,7 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
-
+      if (interaction.commandName === "exportids") return exportIdsCommand.execute(interaction);
       if (interaction.commandName === "listroles") return listRolesCommand.execute(interaction);
       if (interaction.commandName === "quote") return quoteCommand.execute(interaction);
       if (interaction.commandName === "setupserverstats") return setupServerStatsCommand.execute(interaction);
