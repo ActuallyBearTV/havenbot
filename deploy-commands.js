@@ -10,6 +10,11 @@ const {
 } = require("discord.js");
 
 const commands = [
+    new SlashCommandBuilder()
+    .setName("listroles")
+    .setDescription("List every role and its ID.")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+  
   new SlashCommandBuilder()
     .setName("quote")
     .setDescription("Quote a previous message into #quotes")
