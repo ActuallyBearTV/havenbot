@@ -6,29 +6,39 @@ const {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("giverole")
-    .setDescription("Give a role to one member or everyone.")
+    .setDescription("Give up to 5 roles to one member or everyone.")
     .addRoleOption(option =>
-      option
-        .setName("role")
-        .setDescription("Role to give")
-        .setRequired(true)
+      option.setName("role1").setDescription("First role").setRequired(true)
+    )
+    .addRoleOption(option =>
+      option.setName("role2").setDescription("Second role").setRequired(false)
+    )
+    .addRoleOption(option =>
+      option.setName("role3").setDescription("Third role").setRequired(false)
+    )
+    .addRoleOption(option =>
+      option.setName("role4").setDescription("Fourth role").setRequired(false)
+    )
+    .addRoleOption(option =>
+      option.setName("role5").setDescription("Fifth role").setRequired(false)
     )
     .addUserOption(option =>
-      option
-        .setName("user")
-        .setDescription("Member to give the role to")
-        .setRequired(false)
+      option.setName("user").setDescription("Member to give the roles to").setRequired(false)
     )
     .addBooleanOption(option =>
-      option
-        .setName("everyone")
-        .setDescription("Give the role to every non-bot member")
-        .setRequired(false)
+      option.setName("everyone").setDescription("Give roles to every non-bot member").setRequired(false)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
-    const role = interaction.options.getRole("role");
+    const roles = [
+      interaction.options.getRole("role1"),
+      interaction.options.getRole("role2"),
+      interaction.options.getRole("role3"),
+      interaction.options.getRole("role4"),
+      interaction.options.getRole("role5")
+    ].filter(Boolean);
+
     const user = interaction.options.getUser("user");
     const everyone = interaction.options.getBoolean("everyone") ?? false;
 
@@ -49,23 +59,25 @@ module.exports = {
     if (user) {
       const member = await interaction.guild.members.fetch(user.id);
 
-      if (member.roles.cache.has(role.id)) {
+      const rolesToAdd = roles.filter(role => !member.roles.cache.has(role.id));
+
+      if (!rolesToAdd.length) {
         return interaction.reply({
-          content: `${member} already has ${role}.`,
+          content: `${member} already has all of those roles.`,
           ephemeral: true
         });
       }
 
-      await member.roles.add(role);
+      await member.roles.add(rolesToAdd);
 
       return interaction.reply({
-        content: `✅ Gave ${role} to ${member}.`,
+        content: `✅ Gave **${rolesToAdd.length}** role(s) to ${member}.`,
         ephemeral: true
       });
     }
 
     await interaction.reply({
-      content: `⏳ Giving ${role} to everyone...`,
+      content: `⏳ Giving **${roles.length}** role(s) to everyone...`,
       ephemeral: true
     });
 
@@ -81,13 +93,15 @@ module.exports = {
         continue;
       }
 
-      if (member.roles.cache.has(role.id)) {
+      const rolesToAdd = roles.filter(role => !member.roles.cache.has(role.id));
+
+      if (!rolesToAdd.length) {
         skipped++;
         continue;
       }
 
       try {
-        await member.roles.add(role);
+        await member.roles.add(rolesToAdd);
         success++;
       } catch {
         failed++;
@@ -97,7 +111,7 @@ module.exports = {
     await interaction.followUp({
       content:
         `✅ Finished!\n\n` +
-        `Given: **${success}**\n` +
+        `Members updated: **${success}**\n` +
         `Skipped: **${skipped}**\n` +
         `Failed: **${failed}**`,
       ephemeral: true
