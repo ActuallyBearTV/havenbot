@@ -9,7 +9,7 @@ const {
 const { setupStaffLogs } = require("./src/events/staffLogs");
 const { handleStarboard } = require("./src/features/starboard");
 const quoteCommand = require("./src/commands/quote");
-
+const listRolesCommand = require("./src/commands/listroles");
 const setupServerStatsCommand = require("./src/commands/setupServerStats");
 const { updateServerStats } = require("./src/features/serverStats");
 
@@ -262,6 +262,8 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
+
+      if (interaction.commandName === "listroles") return listRolesCommand.execute(interaction);
       if (interaction.commandName === "quote") return quoteCommand.execute(interaction);
       if (interaction.commandName === "setupserverstats") return setupServerStatsCommand.execute(interaction);
       if (interaction.commandName === "profilebackground") return profileBackgroundCommand.execute(interaction);
