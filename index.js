@@ -5,11 +5,16 @@ const {
   GatewayIntentBits,
   Partials
 } = require("discord.js");
+
+const Channels = require("./src/config/channels");
+
 const exportIdsCommand = require("./src/commands/exportids");
+const listRolesCommand = require("./src/commands/listroles");
+
 const { setupStaffLogs } = require("./src/events/staffLogs");
 const { handleStarboard } = require("./src/features/starboard");
 const quoteCommand = require("./src/commands/quote");
-const listRolesCommand = require("./src/commands/listroles");
+
 const setupServerStatsCommand = require("./src/commands/setupServerStats");
 const { updateServerStats } = require("./src/features/serverStats");
 
@@ -115,13 +120,13 @@ client.on("interactionCreate", async interaction => {
       if (interaction.customId === "suggest_modal") {
         const suggestionText = interaction.fields.getTextInputValue("suggestion_text");
 
-        const suggestionsChannel = interaction.guild.channels.cache.find(
-  channel => channel.name === "•₊˚๑❔│suggestˎˊ˗"
-);
+        const suggestionsChannel = interaction.guild.channels.cache.get(
+          Channels.COMMUNITY.SUGGESTIONS
+        );
 
         if (!suggestionsChannel) {
           return interaction.reply({
-            content: "I couldn't find a channel with `suggestions` in the name.",
+            content: "I couldn't find the suggestions channel. Check `channels.js`.",
             ephemeral: true
           });
         }
@@ -254,8 +259,13 @@ client.on("interactionCreate", async interaction => {
       if (
         interaction.customId.startsWith("gender_") ||
         interaction.customId.startsWith("age_") ||
+        interaction.customId.startsWith("pronouns_") ||
+        interaction.customId.startsWith("sexuality_") ||
         interaction.customId.startsWith("location_") ||
-        interaction.customId.startsWith("interest_")
+        interaction.customId.startsWith("relationship_") ||
+        interaction.customId.startsWith("dms_") ||
+        interaction.customId.startsWith("interest_") ||
+        interaction.customId.startsWith("game_")
       ) {
         return toggleSelfRole(interaction);
       }
