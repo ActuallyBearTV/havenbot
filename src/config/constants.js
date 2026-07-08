@@ -70,6 +70,11 @@ const SELF_ROLES = [
   { name: "DMs Closed", id: "dms_closed", roleId: Roles.DMS.DMS_CLOSED, group: "dms" },
   { name: "Ask To DM", id: "dms_ask", roleId: Roles.DMS.ASK_TO_DM, group: "dms" },
 
+  { name: "About Me", id: "separator_about_me", roleId: Roles.SEPARATORS.ABOUT_ME, group: "separator" },
+  { name: "Extra Info", id: "separator_extra_info", roleId: Roles.SEPARATORS.EXTRA_INFO, group: "separator" },
+  { name: "Pings", id: "separator_pings", roleId: Roles.SEPARATORS.PINGS, group: "separator" },
+  { name: "Additional", id: "separator_additional", roleId: Roles.SEPARATORS.ADDITIONAL, group: "separator" },
+
   { name: "🎮 Gamer", id: "interest_gamer", roleId: Roles.INTERESTS.GAMER, group: "interest" },
   { name: "🎵 Music Lover", id: "interest_music", roleId: Roles.INTERESTS.MUSIC, group: "interest" },
   { name: "🎬 Movie Lover", id: "interest_movie", roleId: Roles.INTERESTS.MOVIE, group: "interest" },
