@@ -73,6 +73,11 @@ module.exports = {
         description: "Let people know if they can DM you."
       },
       {
+  group: "separator",
+  title: "✨ Role Separators",
+  description: "Add or remove separator roles from your profile."
+},
+      {
         group: "interest",
         title: "🎨 Interest Roles",
         description: "Choose any interests that apply to you."
