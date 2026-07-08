@@ -37,57 +37,57 @@ module.exports = {
 
   async execute(interaction) {
     const panels = [
-      {
-        group: "age",
-        title: "🔞 Age Roles",
-        description: "Choose your age range."
-      },
-      {
-        group: "gender",
-        title: "⚧️ Gender Roles",
-        description: "Choose your gender role."
-      },
-      {
-        group: "pronouns",
-        title: "💬 Pronoun Roles",
-        description: "Choose your pronouns."
-      },
-      {
-        group: "sexuality",
-        title: "🏳️‍🌈 Sexuality Roles",
-        description: "Choose your sexuality role."
-      },
-      {
-        group: "location",
-        title: "🌍 Location Roles",
-        description: "Choose your location."
-      },
-      {
-        group: "relationship",
-        title: "💞 Relationship Status",
-        description: "Choose your relationship status."
-      },
-      {
-        group: "dms",
-        title: "📩 DM Status",
-        description: "Let people know if they can DM you."
-      },
-      {
-  group: "separator",
-  title: "✨ Role Separators",
-  description: "Add or remove separator roles from your profile."
-},
-      {
-        group: "interest",
-        title: "🎨 Interest Roles",
-        description: "Choose any interests that apply to you."
-      },
-      {
-        group: "game",
-        title: "🎮 Gaming Roles",
-        description: "Choose the games/platforms you play."
-      }
-    ];
+  {
+    group: "age",
+    title: "🔞 Age Roles",
+    description: "Choose your age range."
+  },
+  {
+    group: "gender",
+    title: "⚧️ Gender Roles",
+    description: "Choose your gender role."
+  },
+  {
+    group: "pronouns",
+    title: "💬 Pronoun Roles",
+    description: "Choose your pronouns."
+  },
+  {
+    group: "sexuality",
+    title: "🏳️‍🌈 Sexuality Roles",
+    description: "Choose your sexuality role."
+  },
+  {
+    group: "location",
+    title: "🌍 Location Roles",
+    description: "Choose your location."
+  },
+  {
+    group: "relationship",
+    title: "💞 Relationship Status",
+    description: "Choose your relationship status."
+  },
+  {
+    group: "dms",
+    title: "📩 DM Status",
+    description: "Let people know if they can DM you."
+  },
+  {
+    group: "interest",
+    title: "🎨 Interest Roles",
+    description: "Choose any interests that apply to you."
+  },
+  {
+    group: "game",
+    title: "🎮 Gaming Roles",
+    description: "Choose the games/platforms you play."
+  },
+  {
+    group: "separator",
+    title: "✨ Role Separators",
+    description: "Add or remove separator roles from your profile."
+  }
+];
 
     await interaction.reply({
       content: "✅ Self role panels posted.",
