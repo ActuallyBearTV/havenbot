@@ -11,6 +11,19 @@ const {
 
 const commands = [
   new SlashCommandBuilder()
+  .setName("giverole")
+  .setDescription("Give a role to one member or everyone.")
+  .addRoleOption(option =>
+    option.setName("role").setDescription("Role").setRequired(true)
+  )
+  .addUserOption(option =>
+    option.setName("user").setDescription("User").setRequired(false)
+  )
+  .addBooleanOption(option =>
+    option.setName("everyone").setDescription("Give to everyone").setRequired(false)
+  )
+  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+  new SlashCommandBuilder()
   .setName("exportids")
   .setDescription("Export all IDs.")
   .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
