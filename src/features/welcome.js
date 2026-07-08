@@ -1,9 +1,8 @@
 const { havenEmbed } = require("../utils/embed");
-
-const WELCOME_CHANNEL_ID = "1521148705225572412";
+const Channels = require("../config/channels");
 
 async function sendWelcome(member) {
-  const channel = member.guild.channels.cache.get(WELCOME_CHANNEL_ID);
+  const channel = member.guild.channels.cache.get(Channels.COMMUNITY.GENERAL);
 
   if (!channel) {
     console.log("❌ Welcome channel not found.");
