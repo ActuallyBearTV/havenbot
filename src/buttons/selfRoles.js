@@ -19,7 +19,15 @@ async function toggleSelfRole(interaction) {
     });
   }
 
-  const singleChoiceGroups = ["gender", "age", "location"];
+  const singleChoiceGroups = [
+  "age",
+  "gender",
+  "pronouns",
+  "sexuality",
+  "location",
+  "relationship",
+  "dms"
+];
 
   if (singleChoiceGroups.includes(selected.group)) {
     const rolesToRemove = SELF_ROLES
