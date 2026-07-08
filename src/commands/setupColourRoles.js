@@ -6,12 +6,12 @@ const {
 } = require("discord.js");
 
 const { havenEmbed } = require("../utils/embed");
-const { findChannel, findRole } = require("../utils/finders");
+const { findChannel } = require("../utils/finders");
 const { COLOUR_ROLES } = require("../config/constants");
 
 async function createColourRoles(guild) {
   for (const colour of COLOUR_ROLES) {
-    const existingRole = findRole(guild, colour.name);
+    const existingRole = guild.roles.cache.get(colour.roleId);
 
     if (!existingRole) {
       await guild.roles.create({
@@ -79,7 +79,7 @@ module.exports = {
     }
 
     await interaction.reply({
-      content: "Setting up colour roles...",
+      content: "Setting up colour role menu...",
       ephemeral: true
     });
 
@@ -87,7 +87,7 @@ module.exports = {
     await postColourRoleMenu(interaction.guild);
 
     await interaction.followUp({
-      content: "✅ Colour roles created.",
+      content: "✅ Colour role menu posted.",
       ephemeral: true
     });
   }
