@@ -257,18 +257,19 @@ client.on("interactionCreate", async interaction => {
       if (interaction.customId.startsWith("ping_")) return toggleOptionalPing(interaction);
 
       if (
-        interaction.customId.startsWith("gender_") ||
-        interaction.customId.startsWith("age_") ||
-        interaction.customId.startsWith("pronouns_") ||
-        interaction.customId.startsWith("sexuality_") ||
-        interaction.customId.startsWith("location_") ||
-        interaction.customId.startsWith("relationship_") ||
-        interaction.customId.startsWith("dms_") ||
-        interaction.customId.startsWith("interest_") ||
-        interaction.customId.startsWith("game_")
-      ) {
-        return toggleSelfRole(interaction);
-      }
+  interaction.customId.startsWith("gender_") ||
+  interaction.customId.startsWith("age_") ||
+  interaction.customId.startsWith("pronouns_") ||
+  interaction.customId.startsWith("sexuality_") ||
+  interaction.customId.startsWith("location_") ||
+  interaction.customId.startsWith("relationship_") ||
+  interaction.customId.startsWith("dms_") ||
+  interaction.customId.startsWith("separator_") ||
+  interaction.customId.startsWith("interest_") ||
+  interaction.customId.startsWith("game_")
+) {
+  return toggleSelfRole(interaction);
+}
     }
 
     if (interaction.isChatInputCommand()) {
