@@ -28,7 +28,7 @@ const commands = [
   .addRoleOption(option =>
     option.setName("role5").setDescription("Fifth role").setRequired(false)
   )
-  .addUserOption(option =>
+    .addUserOption(option =>
     option.setName("user").setDescription("Member to give the roles to").setRequired(false)
   )
   .addBooleanOption(option =>
