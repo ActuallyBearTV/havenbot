@@ -10,7 +10,7 @@ const Channels = require("./src/config/channels");
 
 const exportIdsCommand = require("./src/commands/exportids");
 const listRolesCommand = require("./src/commands/listroles");
-
+const giveRoleCommand = require("./src/commands/giverole");
 const { setupStaffLogs } = require("./src/events/staffLogs");
 const { handleStarboard } = require("./src/features/starboard");
 const quoteCommand = require("./src/commands/quote");
@@ -272,6 +272,7 @@ client.on("interactionCreate", async interaction => {
     }
 
     if (interaction.isChatInputCommand()) {
+      if (interaction.commandName === "giverole") return giveRoleCommand.execute(interaction);
       if (interaction.commandName === "exportids") return exportIdsCommand.execute(interaction);
       if (interaction.commandName === "listroles") return listRolesCommand.execute(interaction);
       if (interaction.commandName === "quote") return quoteCommand.execute(interaction);
