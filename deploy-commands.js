@@ -11,6 +11,10 @@ const {
 
 const commands = [
   new SlashCommandBuilder()
+  .setName("setup-rules")
+  .setDescription("Post the Haven rules panel.")
+  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+  new SlashCommandBuilder()
     .setName("giverole")
     .setDescription("Give up to 5 roles to one member or everyone.")
     .addRoleOption(option =>
