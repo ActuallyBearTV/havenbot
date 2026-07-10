@@ -1,94 +1,118 @@
-const {
-  PermissionFlagsBits,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle
-} = require("discord.js");
+const { PermissionFlagsBits } = require("discord.js");
 
-const { havenEmbed } = require("../utils/embed");
 const { findChannel } = require("../utils/finders");
 const { COLOUR_ROLES } = require("../config/constants");
 
-async function createColourRoles(guild) {
-  for (const colour of COLOUR_ROLES) {
-    const existingRole = guild.roles.cache.get(colour.roleId);
-
-    if (!existingRole) {
-      await guild.roles.create({
-        name: colour.name,
-        color: colour.hex,
-        hoist: false,
-        mentionable: false,
-        reason: "Haven colour role setup"
-      });
-    }
-  }
+function getEmojiId(emoji) {
+  const customEmoji = emoji?.match(/<a?:\w+:(\d+)>/);
+  return customEmoji ? customEmoji[1] : emoji;
 }
 
-async function postColourRoleMenu(guild) {
-  const channel = findChannel(guild, "🎨・colour-roles");
-
-  if (!channel) {
-    throw new Error("Could not find 🎨・colour-roles channel.");
-  }
-
-  const rows = [];
-  let currentRow = new ActionRowBuilder();
-
-  COLOUR_ROLES.forEach((colour, index) => {
-    if (index > 0 && index % 4 === 0) {
-      rows.push(currentRow);
-      currentRow = new ActionRowBuilder();
-    }
-
-    currentRow.addComponents(
-      new ButtonBuilder()
-        .setCustomId(colour.id)
-        .setLabel(colour.name)
-        .setStyle(ButtonStyle.Secondary)
-    );
-  });
-
-  rows.push(currentRow);
-
-  await channel.send({
-    embeds: [
-      havenEmbed(
-        "🎨 Choose Your Colour",
-        `Personalise your name with your favourite colour!
-
-Click a button below to choose your colour role.
-
-• You can only have one colour role.
-• Choosing another colour removes the old one.`
-      )
-    ],
-    components: rows
-  });
+function getCleanName(name) {
+  return name.replace(/^[^\p{L}\p{N}]+/u, "").trim();
 }
 
 module.exports = {
   name: "setup-colour-roles",
 
   async execute(interaction) {
-    if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
+    if (
+      !interaction.memberPermissions.has(
+        PermissionFlagsBits.Administrator
+      )
+    ) {
       return interaction.reply({
-        content: "You need Administrator permission.",
+        content: "❌ You need Administrator permission.",
         ephemeral: true
       });
     }
 
     await interaction.reply({
-      content: "Setting up colour role menu...",
+      content: "Setting up the colour reaction roles...",
       ephemeral: true
     });
 
-    await createColourRoles(interaction.guild);
-    await postColourRoleMenu(interaction.guild);
+    try {
+      const channel = findChannel(
+        interaction.guild,
+        "🎨・colour-roles"
+      );
 
-    await interaction.followUp({
-      content: "✅ Colour role menu posted.",
-      ephemeral: true
-    });
+      if (!channel) {
+        throw new Error(
+          "Could not find the 🎨・colour-roles channel."
+        );
+      }
+
+      const validColours = COLOUR_ROLES.filter(colour => {
+        const role = interaction.guild.roles.cache.get(
+          colour.roleId
+        );
+
+        if (!role) {
+          console.warn(
+            `Missing colour role: ${colour.name} (${colour.roleId})`
+          );
+
+          return false;
+        }
+
+        if (!colour.emoji) {
+          console.warn(
+            `Missing emoji for colour: ${colour.name}`
+          );
+
+          return false;
+        }
+
+        return true;
+      });
+
+      if (validColours.length === 0) {
+        throw new Error(
+          "No valid colour roles were found in constants.js."
+        );
+      }
+
+      const roleList = validColours
+        .map(
+          colour =>
+            `${colour.emoji}  **${getCleanName(colour.name)}**`
+        )
+        .join("\n");
+
+      const message = await channel.send({
+        content: [
+          "˖ ࣪ ⊹ **colour roles** ୨୧ ˖",
+          "",
+          "⊹ React below to choose your name colour.",
+          "⊹ Choosing a new colour removes your previous colour.",
+          "⊹ Remove your reaction to remove the role.",
+          "",
+          roleList
+        ].join("\n")
+      });
+
+      for (const colour of validColours) {
+        try {
+          await message.react(getEmojiId(colour.emoji));
+        } catch (error) {
+          console.error(
+            `Could not add reaction for ${colour.name}:`,
+            error
+          );
+        }
+      }
+
+      await interaction.editReply({
+        content: `✅ Colour reaction roles posted in ${channel}.`
+      });
+    } catch (error) {
+      console.error("Colour role setup error:", error);
+
+      await interaction.editReply({
+        content: `❌ ${error.message}`
+      });
+    }
   }
 };
