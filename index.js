@@ -152,6 +152,9 @@ client.on("interactionCreate", async interaction => {
           suggestionId,
           sentMessage.id
         );
+        if (interaction.customId.startsWith("colour_")) {
+  return toggleColourRole(interaction);
+}
 
         return interaction.reply({
           content:
