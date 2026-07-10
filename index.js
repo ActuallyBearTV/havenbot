@@ -720,12 +720,53 @@ client.on("guildMemberRemove", async member => {
 });
 
 setupStaffLogs(client);
-console.log("DISCORD_TOKEN loaded:", Boolean(process.env.DISCORD_TOKEN));
+console.log(
+  "DISCORD_TOKEN loaded:",
+  Boolean(process.env.DISCORD_TOKEN)
+);
 
-client.login(process.env.DISCORD_TOKEN)
-  .then(() => {
-    console.log("✅ Discord login request succeeded.");
-  })
-  .catch(error => {
-    console.error("❌ Discord login failed:", error);
-  });
+async function startBot() {
+  try {
+    console.log("Testing Discord API connection...");
+
+    const response = await fetch(
+      "https://discord.com/api/v10/gateway/bot",
+      {
+        headers: {
+          Authorization: `Bot ${process.env.DISCORD_TOKEN}`
+        }
+      }
+    );
+
+    console.log("Discord API status:", response.status);
+
+    if (!response.ok) {
+      const body = await response.text();
+      console.error("Discord API response:", body);
+      return;
+    }
+
+    console.log("✅ Token accepted by Discord.");
+    console.log("Connecting to Discord Gateway...");
+
+    await Promise.race([
+      client.login(process.env.DISCORD_TOKEN),
+
+      new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(
+            new Error(
+              "Discord login timed out after 30 seconds."
+            )
+          );
+        }, 30_000);
+      })
+    ]);
+
+    console.log("✅ Discord login completed.");
+  } catch (error) {
+    console.error("❌ Bot startup failed:", error);
+  }
+}
+
+startBot();
