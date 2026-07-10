@@ -720,5 +720,12 @@ client.on("guildMemberRemove", async member => {
 });
 
 setupStaffLogs(client);
+console.log("DISCORD_TOKEN loaded:", Boolean(process.env.DISCORD_TOKEN));
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN)
+  .then(() => {
+    console.log("✅ Discord login request succeeded.");
+  })
+  .catch(error => {
+    console.error("❌ Discord login failed:", error);
+  });
