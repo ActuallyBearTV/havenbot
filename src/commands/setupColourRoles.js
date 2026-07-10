@@ -85,9 +85,9 @@ module.exports = {
       }
 
       const bannerPath = path.join(
-        __dirname,
-        "../assets/roles-banner.png"
-      );
+  __dirname,
+  "../assets/colour-banner.jpg"
+);
 
       const banner = new AttachmentBuilder(bannerPath);
 
