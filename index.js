@@ -71,6 +71,7 @@ const { toggleOptionalPing } = require("./src/buttons/optionalPings");
 const verifyCommand = require("./src/commands/verify");
 const setupColourRoles = require("./src/commands/setupColourRoles");
 const setupOptionalPings = require("./src/commands/setupOptionalPings");
+const setupRules = require("./src/commands/setupRules");
 const postCustom = require("./src/commands/postCustom");
 
 const client = new Client({
@@ -616,6 +617,14 @@ client.on("interactionCreate", async interaction => {
           interaction
         );
       }
+      if (
+  interaction.commandName ===
+  "setup-rules"
+) {
+  return setupRules.execute(
+    interaction
+  );
+}
 
       if (
         interaction.commandName ===
