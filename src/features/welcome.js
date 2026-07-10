@@ -13,21 +13,20 @@ async function sendWelcome(member) {
     content: `${member}`,
     embeds: [
       havenEmbed(
-        "🌙 Welcome to Haven!",
+        "<:174f_moon:1525205327916564550> Welcome to Haven | 18+ ",
         [
-          `Welcome ${member}! ❤️`,
+          `Welcome ${member}! <a:002_heart:1525205472779571300>
+`,
           "",
           "We're so happy you've joined **Haven**.",
           "",
-          "**Before you get chatting:**",
-          "✅ Verify yourself",
-          "🎨 Choose your colour",
-          "🔔 Pick your notification roles",
-          "🙋 Introduce yourself",
-          "",
+          "**╭₊˚๑ before you start chatting : ₊˚੭ make sure you do the following..**",
+          "˖ ࣪ ⊹ checkout our ⁠•₊˚๑<#1521148695146397867>ˎˊ˗",
+          "˖ ࣪ ⊹ introduce yourself and have fun ",
+        
           `You are member **#${member.guild.memberCount}**.`,
           "",
-          "We hope you enjoy your stay!"
+          "We hope you enjoy your stay! <:1ivys_heart:1525205802099540061>"
         ].join("\n"),
         "#F472B6"
       )
