@@ -1,6 +1,5 @@
 const { PermissionFlagsBits } = require("discord.js");
 
-const { findChannel } = require("../utils/finders");
 const { COLOUR_ROLES } = require("../config/constants");
 
 function getEmojiId(emoji) {
@@ -33,15 +32,28 @@ module.exports = {
     });
 
     try {
-      const channel = findChannel(
-        interaction.guild,
-        "🎨・colour-roles"
-      );
+      const channel = interaction.channel;
 
-      if (!channel) {
-        throw new Error(
-          "Could not find the 🎨・colour-roles channel."
+      const messages = await channel.messages.fetch({
+        limit: 100
+      });
+
+      const oldPanels = messages.filter(message => {
+        return (
+          message.author.id === interaction.client.user.id &&
+          message.content.includes("**colour roles**")
         );
+      });
+
+      for (const oldPanel of oldPanels.values()) {
+        try {
+          await oldPanel.delete();
+        } catch (error) {
+          console.warn(
+            `Could not delete old colour panel ${oldPanel.id}:`,
+            error.message
+          );
+        }
       }
 
       const validColours = COLOUR_ROLES.filter(colour => {
@@ -70,24 +82,23 @@ module.exports = {
 
       if (validColours.length === 0) {
         throw new Error(
-          "No valid colour roles were found in constants.js."
+          "No valid colour roles were found. Check the role IDs and emojis in constants.js."
         );
       }
 
       const roleList = validColours
-        .map(
-          colour =>
-            `${colour.emoji}  **${getCleanName(colour.name)}**`
-        )
+        .map(colour => {
+          return `${colour.emoji}  **${getCleanName(colour.name)}**`;
+        })
         .join("\n");
 
       const message = await channel.send({
         content: [
           "˖ ࣪ ⊹ **colour roles** ୨୧ ˖",
           "",
-          "⊹ React below to choose your name colour.",
-          "⊹ Choosing a new colour removes your previous colour.",
-          "⊹ Remove your reaction to remove the role.",
+          "⊹ react below to choose your name colour.",
+          "⊹ choosing a new colour removes your previous colour.",
+          "⊹ remove your reaction to remove the role.",
           "",
           roleList
         ].join("\n")
@@ -95,7 +106,9 @@ module.exports = {
 
       for (const colour of validColours) {
         try {
-          await message.react(getEmojiId(colour.emoji));
+          await message.react(
+            getEmojiId(colour.emoji)
+          );
         } catch (error) {
           console.error(
             `Could not add reaction for ${colour.name}:`,
@@ -108,7 +121,10 @@ module.exports = {
         content: `✅ Colour reaction roles posted in ${channel}.`
       });
     } catch (error) {
-      console.error("Colour role setup error:", error);
+      console.error(
+        "Colour role setup error:",
+        error
+      );
 
       await interaction.editReply({
         content: `❌ ${error.message}`
