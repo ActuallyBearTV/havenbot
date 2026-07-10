@@ -26,7 +26,7 @@ function createRows(group) {
       row.addComponents(
         new ButtonBuilder()
           .setCustomId(role.id)
-          .setLabel(role.name)
+          .setLabel(role.name.toLowerCase())
           .setStyle(ButtonStyle.Secondary)
       );
     }
