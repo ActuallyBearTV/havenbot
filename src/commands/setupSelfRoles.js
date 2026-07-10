@@ -1,5 +1,8 @@
 const {
   SlashCommandBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   PermissionFlagsBits,
   AttachmentBuilder
 } = require("discord.js");
@@ -7,158 +10,179 @@ const {
 const path = require("path");
 const { SELF_ROLES } = require("../config/constants");
 
-function getEmojiDisplay(emoji) {
-  if (!emoji) return "❔";
+function createRows(group) {
+  const roles = SELF_ROLES.filter(
+    role => role.group === group
+  );
 
-  // Supports normal Unicode emojis
-  if (!emoji.includes(":")) {
-    return emoji;
+  const rows = [];
+
+  for (let i = 0; i < roles.length; i += 5) {
+    const row = new ActionRowBuilder();
+
+    const rowRoles = roles.slice(i, i + 5);
+
+    for (const role of rowRoles) {
+      row.addComponents(
+        new ButtonBuilder()
+          .setCustomId(role.id)
+          .setLabel(role.name)
+          .setStyle(ButtonStyle.Secondary)
+      );
+    }
+
+    rows.push(row);
   }
 
-  // Supports custom emoji strings such as:
-  // <:pinkheart:123456789012345678>
-  return emoji;
-}
-
-function getReactionEmoji(emoji) {
-  if (!emoji) return null;
-
-  // Converts a custom emoji string into its ID for message.react()
-  const customEmojiMatch = emoji.match(/<a?:\w+:(\d+)>/);
-
-  if (customEmojiMatch) {
-    return customEmojiMatch[1];
-  }
-
-  return emoji;
-}
-
-function createRoleList(group) {
-  const roles = SELF_ROLES.filter(role => role.group === group);
-
-  return roles
-    .map(role => `${getEmojiDisplay(role.emoji)}  **${role.name}**`)
-    .join("\n");
+  return rows;
 }
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("setup-self-roles")
-    .setDescription("Post all Haven reaction-role panels.")
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    .setDescription("Post all Haven self-role panels.")
+    .setDefaultMemberPermissions(
+      PermissionFlagsBits.Administrator
+    ),
 
   async execute(interaction) {
     await interaction.reply({
-      content: "✅ Posting the reaction-role panels...",
+      content: "Setting up the self-role panels...",
       ephemeral: true
     });
 
-    const bannerPath = path.join(
-      __dirname,
-      "../assets/roles-banner.png"
-    );
+    try {
+      const channel = interaction.channel;
 
-    const banner = new AttachmentBuilder(bannerPath);
-
-    await interaction.channel.send({
-      files: [banner]
-    });
-
-    const panels = [
-      {
-        group: "age",
-        title: "˖ ࣪ ⊹ **age roles** ୨୧ ˖",
-        description: "⊹ choose your age range."
-      },
-      {
-        group: "gender",
-        title: "˖ ࣪ ⊹ **gender roles** ୨୧ ˖",
-        description: "⊹ choose your gender role."
-      },
-      {
-        group: "pronouns",
-        title: "˖ ࣪ ⊹ **pronoun roles** ୨୧ ˖",
-        description: "⊹ choose your pronouns."
-      },
-      {
-        group: "sexuality",
-        title: "˖ ࣪ ⊹ **sexuality roles** ୨୧ ˖",
-        description: "⊹ choose your sexuality role."
-      },
-      {
-        group: "relationship",
-        title: "˖ ࣪ ⊹ **relationship roles** ୨୧ ˖",
-        description: "⊹ choose your relationship status."
-      },
-      {
-        group: "location",
-        title: "˖ ࣪ ⊹ **location roles** ୨୧ ˖",
-        description: "⊹ choose where you're from."
-      },
-      {
-        group: "dms",
-        title: "˖ ࣪ ⊹ **dm preference** ୨୧ ˖",
-        description: "⊹ let people know if they can message you."
-      },
-      {
-        group: "interest",
-        title: "˖ ࣪ ⊹ **interest roles** ୨୧ ˖",
-        description: "⊹ choose anything you're interested in."
-      },
-      {
-        group: "game",
-        title: "˖ ࣪ ⊹ **gaming roles** ୨୧ ˖",
-        description: "⊹ choose the games and platforms you play."
-      },
-      {
-        group: "separator",
-        title: "˖ ࣪ ⊹ **role separators** ୨୧ ˖",
-        description: "⊹ decorate and organise your profile."
-      }
-    ];
-
-    for (const panel of panels) {
-      const roles = SELF_ROLES.filter(
-        role => role.group === panel.group
-      );
-
-      if (roles.length === 0) {
-        continue;
-      }
-
-      const message = await interaction.channel.send({
-        content: [
-          panel.title,
-          panel.description,
-          "",
-          createRoleList(panel.group)
-        ].join("\n")
+      // Delete old self-role panels posted by the bot
+      const messages = await channel.messages.fetch({
+        limit: 100
       });
 
-      for (const role of roles) {
-        const reactionEmoji = getReactionEmoji(role.emoji);
+      const oldPanels = messages.filter(message => {
+        return (
+          message.author.id === interaction.client.user.id &&
+          (
+            message.content.includes("**age roles**") ||
+            message.content.includes("**gender roles**") ||
+            message.content.includes("**pronoun roles**") ||
+            message.content.includes("**sexuality roles**") ||
+            message.content.includes("**relationship roles**") ||
+            message.content.includes("**location roles**") ||
+            message.content.includes("**dm preference**") ||
+            message.content.includes("**interest roles**") ||
+            message.content.includes("**gaming roles**") ||
+            message.content.includes("**role separators**")
+          )
+        );
+      });
 
-        if (!reactionEmoji) {
+      for (const oldPanel of oldPanels.values()) {
+        await oldPanel.delete().catch(error => {
           console.warn(
-            `No emoji configured for reaction role: ${role.name}`
+            `Could not delete old self-role panel ${oldPanel.id}:`,
+            error.message
           );
+        });
+      }
 
+      // Post the banner
+      const bannerPath = path.join(
+        __dirname,
+        "../assets/roles-banner.png"
+      );
+
+      const banner = new AttachmentBuilder(bannerPath);
+
+      await channel.send({
+        files: [banner]
+      });
+
+      const panels = [
+        {
+          group: "age",
+          content:
+            "˖ ࣪ ⊹ **age roles** ୨୧ ˖\n" +
+            "⊹ choose your age range."
+        },
+        {
+          group: "gender",
+          content:
+            "˖ ࣪ ⊹ **gender roles** ୨୧ ˖\n" +
+            "⊹ choose your gender role."
+        },
+        {
+          group: "pronouns",
+          content:
+            "˖ ࣪ ⊹ **pronoun roles** ୨୧ ˖\n" +
+            "⊹ choose your pronouns."
+        },
+        {
+          group: "sexuality",
+          content:
+            "˖ ࣪ ⊹ **sexuality roles** ୨୧ ˖\n" +
+            "⊹ choose your sexuality role."
+        },
+        {
+          group: "relationship",
+          content:
+            "˖ ࣪ ⊹ **relationship roles** ୨୧ ˖\n" +
+            "⊹ choose your relationship status."
+        },
+        {
+          group: "location",
+          content:
+            "˖ ࣪ ⊹ **location roles** ୨୧ ˖\n" +
+            "⊹ choose where you're from."
+        },
+        {
+          group: "dms",
+          content:
+            "˖ ࣪ ⊹ **dm preference** ୨୧ ˖\n" +
+            "⊹ let people know if they can message you."
+        },
+        {
+          group: "interest",
+          content:
+            "˖ ࣪ ⊹ **interest roles** ୨୧ ˖\n" +
+            "⊹ choose anything you're interested in."
+        },
+        {
+          group: "game",
+          content:
+            "˖ ࣪ ⊹ **gaming roles** ୨୧ ˖\n" +
+            "⊹ choose the games and platforms you play."
+        },
+        {
+          group: "separator",
+          content:
+            "˖ ࣪ ⊹ **role separators** ୨୧ ˖\n" +
+            "⊹ decorate and organise your profile."
+        }
+      ];
+
+      for (const panel of panels) {
+        const rows = createRows(panel.group);
+
+        if (rows.length === 0) {
           continue;
         }
 
-        try {
-          await message.react(reactionEmoji);
-        } catch (error) {
-          console.error(
-            `Could not react with emoji for ${role.name}:`,
-            error
-          );
-        }
+        await channel.send({
+          content: panel.content,
+          components: rows
+        });
       }
-    }
 
-    await interaction.editReply({
-      content: "✅ The reaction-role panels have been posted."
-    });
+      await interaction.editReply({
+        content: `✅ Self-role panels posted in ${channel}.`
+      });
+    } catch (error) {
+      console.error("Self-role setup error:", error);
+
+      await interaction.editReply({
+        content: `❌ Self-role setup failed: ${error.message}`
+      });
+    }
   }
 };
