@@ -25,11 +25,12 @@ function createColourRows() {
 
     for (const colour of colours) {
       row.addComponents(
-        new ButtonBuilder()
-          .setCustomId(colour.id)
-          .setLabel(cleanButtonLabel(colour.name))
-          .setStyle(ButtonStyle.Secondary)
-      );
+  new ButtonBuilder()
+    .setCustomId(colour.id)
+    .setLabel(cleanButtonLabel(colour.name))
+    .setEmoji(colour.emoji.match(/<a?:\w+:(\d+)>/)[1])
+    .setStyle(ButtonStyle.Secondary)
+);
     }
 
     rows.push(row);
