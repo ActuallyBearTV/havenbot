@@ -20,7 +20,10 @@ async function sendWelcome(member) {
           "",
           "We're so happy you've joined **Haven**.",
           "",
-          "**╭₊˚๑ before you start chatting : ₊˚੭ make sure you do the following..**",
+          "˖ ࣪ ⊹ read the ⁠<#1521148685394772099>",
+          "**╭₊˚๑ before you start chatting : ₊˚੭ 
+          "make sure you do the following..**",
+          "˖ ࣪ ⊹ read the ⁠<#1521148685394772099>",
           "˖ ࣪ ⊹ checkout our ⁠•₊˚๑<#1521148695146397867>ˎˊ˗",
           "˖ ࣪ ⊹ introduce yourself and have fun ",
         
