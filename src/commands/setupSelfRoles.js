@@ -26,7 +26,11 @@ function createRows(group) {
       row.addComponents(
         new ButtonBuilder()
           .setCustomId(role.id)
-          .setLabel(role.name.toLowerCase())
+          .setLabel(
+  role.name
+    .replace(/^[^\p{L}\p{N}]+/u, "")
+    .toLowerCase()
+)
           .setStyle(ButtonStyle.Secondary)
       );
     }
