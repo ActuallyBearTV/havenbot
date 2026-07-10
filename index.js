@@ -8,6 +8,7 @@ const {
 
 const Channels = require("./src/config/channels");
 
+
 const exportIdsCommand = require("./src/commands/exportids");
 const listRolesCommand = require("./src/commands/listroles");
 const giveRoleCommand = require("./src/commands/giverole");
@@ -659,6 +660,24 @@ client.on("interactionCreate", async interaction => {
         return setupTicketPanel.execute(
           interaction
         );
+      }
+        if (
+  interaction.commandName ===
+  "setup-optional-pings"
+) {
+  return setupOptionalPings.execute(
+    interaction
+  );
+}
+
+if (
+  interaction.commandName ===
+  "post-custom"
+) {
+  return postCustom.execute(
+    interaction
+  );
+}
       }
 
       return interaction.reply({
