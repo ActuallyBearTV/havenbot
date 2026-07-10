@@ -1,26 +1,15 @@
 const { COLOUR_ROLES } = require("../config/constants");
 
-const COLOUR_CHANNEL_NAME = "🎨・colour-roles";
-const COLOUR_PANEL_TITLE = "˖ ࣪ ⊹ **colour roles** ୨୧ ˖";
-
 function getConfiguredEmojiId(emoji) {
   if (!emoji) return null;
 
-  const customEmoji = emoji.match(/<a?:\w+:(\d+)>/);
+  const match = emoji.match(/<a?:\w+:(\d+)>/);
 
-  return customEmoji ? customEmoji[1] : emoji;
+  return match ? match[1] : emoji;
 }
 
 function getReactionEmojiId(reaction) {
   return reaction.emoji.id || reaction.emoji.name;
-}
-
-function findColour(reaction) {
-  const reactionEmojiId = getReactionEmojiId(reaction);
-
-  return COLOUR_ROLES.find(colour => {
-    return getConfiguredEmojiId(colour.emoji) === reactionEmojiId;
-  });
 }
 
 async function prepareReaction(reaction) {
@@ -35,65 +24,52 @@ async function prepareReaction(reaction) {
 
     return true;
   } catch (error) {
-    console.error("Could not fetch partial reaction:", error);
+    console.error("Failed to fetch reaction:", error);
     return false;
   }
 }
 
-function isColourPanel(reaction) {
-  const message = reaction.message;
+function findColourFromReaction(reaction) {
+  const emojiId = getReactionEmojiId(reaction);
 
-  if (!message.guild) return false;
-  if (message.channel.name !== COLOUR_CHANNEL_NAME) return false;
-  if (message.author?.id !== message.client.user.id) return false;
-
-  return message.content.startsWith(COLOUR_PANEL_TITLE);
+  return COLOUR_ROLES.find(colour => {
+    return getConfiguredEmojiId(colour.emoji) === emojiId;
+  });
 }
 
-async function removeOldColourReactions(message, userId, selectedEmojiId) {
-  for (const messageReaction of message.reactions.cache.values()) {
-    const emojiId =
-      messageReaction.emoji.id || messageReaction.emoji.name;
+function isColourRoleMessage(reaction) {
+  const message = reaction.message;
 
-    if (emojiId === selectedEmojiId) continue;
-
-    const isColourEmoji = COLOUR_ROLES.some(colour => {
-      return getConfiguredEmojiId(colour.emoji) === emojiId;
-    });
-
-    if (!isColourEmoji) continue;
-
-    try {
-      await messageReaction.users.remove(userId);
-    } catch (error) {
-      console.warn(
-        `Could not remove old colour reaction from ${userId}:`,
-        error.message
-      );
-    }
-  }
+  return (
+    message.guild &&
+    message.author?.id === message.client.user.id &&
+    message.content.includes("**colour roles**")
+  );
 }
 
 async function handleColourReactionAdd(reaction, user) {
   if (user.bot) return;
 
-  const prepared = await prepareReaction(reaction);
+  const ready = await prepareReaction(reaction);
 
-  if (!prepared || !isColourPanel(reaction)) return;
+  if (!ready || !isColourRoleMessage(reaction)) {
+    return;
+  }
 
-  const selectedColour = findColour(reaction);
+  const selectedColour = findColourFromReaction(reaction);
 
   if (!selectedColour) return;
 
   const guild = reaction.message.guild;
   const member = await guild.members.fetch(user.id);
+
   const selectedRole = guild.roles.cache.get(
     selectedColour.roleId
   );
 
   if (!selectedRole) {
     console.error(
-      `Colour role does not exist: ${selectedColour.roleId}`
+      `Missing colour role: ${selectedColour.name} (${selectedColour.roleId})`
     );
 
     return;
@@ -116,25 +92,46 @@ async function handleColourReactionAdd(reaction, user) {
     if (rolesToRemove.length > 0) {
       await member.roles.remove(
         rolesToRemove,
-        "Member selected a new colour reaction role"
+        "Selected a different colour reaction role"
       );
     }
 
     if (!member.roles.cache.has(selectedRole.id)) {
       await member.roles.add(
         selectedRole,
-        "Member selected a colour reaction role"
+        "Selected a colour reaction role"
       );
     }
 
-    await removeOldColourReactions(
-      reaction.message,
-      user.id,
-      getReactionEmojiId(reaction)
-    );
+    // Remove the member's previous colour reactions
+    for (const existingReaction of reaction.message.reactions.cache.values()) {
+      const existingEmojiId =
+        existingReaction.emoji.id ||
+        existingReaction.emoji.name;
+
+      const selectedEmojiId =
+        getReactionEmojiId(reaction);
+
+      if (existingEmojiId === selectedEmojiId) {
+        continue;
+      }
+
+      const isColourEmoji = COLOUR_ROLES.some(colour => {
+        return (
+          getConfiguredEmojiId(colour.emoji) ===
+          existingEmojiId
+        );
+      });
+
+      if (!isColourEmoji) continue;
+
+      await existingReaction.users
+        .remove(user.id)
+        .catch(() => {});
+    }
   } catch (error) {
     console.error(
-      `Could not add colour role ${selectedColour.name}:`,
+      `Failed to give ${selectedColour.name}:`,
       error
     );
   }
@@ -143,28 +140,29 @@ async function handleColourReactionAdd(reaction, user) {
 async function handleColourReactionRemove(reaction, user) {
   if (user.bot) return;
 
-  const prepared = await prepareReaction(reaction);
+  const ready = await prepareReaction(reaction);
 
-  if (!prepared || !isColourPanel(reaction)) return;
+  if (!ready || !isColourRoleMessage(reaction)) {
+    return;
+  }
 
-  const selectedColour = findColour(reaction);
+  const selectedColour = findColourFromReaction(reaction);
 
   if (!selectedColour) return;
 
   try {
-    const member = await reaction.message.guild.members.fetch(
-      user.id
-    );
+    const member =
+      await reaction.message.guild.members.fetch(user.id);
 
     if (member.roles.cache.has(selectedColour.roleId)) {
       await member.roles.remove(
         selectedColour.roleId,
-        "Member removed a colour reaction"
+        "Removed a colour reaction"
       );
     }
   } catch (error) {
     console.error(
-      `Could not remove colour role ${selectedColour.name}:`,
+      `Failed to remove ${selectedColour.name}:`,
       error
     );
   }
