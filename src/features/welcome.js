@@ -32,7 +32,7 @@ async function sendWelcome(member) {
           "",
           "We hope you enjoy your stay! <:1ivys_heart:1525205802099540061>"
         ].join("\n"),
-        "#F472B6"
+        "#2B0B3F"
       )
     ]
   });
