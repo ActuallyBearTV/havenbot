@@ -4,11 +4,18 @@ const {
   ButtonBuilder,
   ButtonStyle,
   PermissionFlagsBits,
-  AttachmentBuilder
+  AttachmentBuilder,
+  EmbedBuilder
 } = require("discord.js");
 
 const path = require("path");
 const { SELF_ROLES } = require("../config/constants");
+
+function cleanButtonLabel(name) {
+  return name
+    .replace(/^[^\p{L}\p{N}]+/u, "")
+    .toLowerCase();
+}
 
 function createRows(group) {
   const roles = SELF_ROLES.filter(
@@ -19,18 +26,13 @@ function createRows(group) {
 
   for (let i = 0; i < roles.length; i += 5) {
     const row = new ActionRowBuilder();
-
     const rowRoles = roles.slice(i, i + 5);
 
     for (const role of rowRoles) {
       row.addComponents(
         new ButtonBuilder()
           .setCustomId(role.id)
-          .setLabel(
-  role.name
-    .replace(/^[^\p{L}\p{N}]+/u, "")
-    .toLowerCase()
-)
+          .setLabel(cleanButtonLabel(role.name))
           .setStyle(ButtonStyle.Secondary)
       );
     }
@@ -58,25 +60,27 @@ module.exports = {
     try {
       const channel = interaction.channel;
 
-      // Delete old self-role panels posted by the bot
       const messages = await channel.messages.fetch({
         limit: 100
       });
 
       const oldPanels = messages.filter(message => {
+        const description =
+          message.embeds[0]?.description || message.content;
+
         return (
           message.author.id === interaction.client.user.id &&
           (
-            message.content.includes("**age roles**") ||
-            message.content.includes("**gender roles**") ||
-            message.content.includes("**pronoun roles**") ||
-            message.content.includes("**sexuality roles**") ||
-            message.content.includes("**relationship roles**") ||
-            message.content.includes("**location roles**") ||
-            message.content.includes("**dm preference**") ||
-            message.content.includes("**interest roles**") ||
-            message.content.includes("**gaming roles**") ||
-            message.content.includes("**role separators**")
+            description.includes("**age roles**") ||
+            description.includes("**gender roles**") ||
+            description.includes("**pronoun roles**") ||
+            description.includes("**sexuality roles**") ||
+            description.includes("**relationship roles**") ||
+            description.includes("**region roles**") ||
+            description.includes("**dm status**") ||
+            description.includes("**interest roles**") ||
+            description.includes("**gaming roles**") ||
+            description.includes("**role separators**")
           )
         );
       });
@@ -90,7 +94,6 @@ module.exports = {
         });
       }
 
-      // Post the banner
       const bannerPath = path.join(
         __dirname,
         "../assets/roles-banner.png"
@@ -128,40 +131,40 @@ module.exports = {
             "⊹ choose your sexuality role."
         },
         {
+          group: "location",
+          content:
+            "˖ ࣪ ⊹ **region roles** ୨୧ ˖\n" +
+            "⊹ choose your location role."
+        },
+        {
           group: "relationship",
           content:
             "˖ ࣪ ⊹ **relationship roles** ୨୧ ˖\n" +
             "⊹ choose your relationship status."
         },
         {
-          group: "location",
-          content:
-            "˖ ࣪ ⊹ **location roles** ୨୧ ˖\n" +
-            "⊹ choose where you're from."
-        },
-        {
           group: "dms",
           content:
-            "˖ ࣪ ⊹ **dm preference** ୨୧ ˖\n" +
-            "⊹ let people know if they can message you."
+            "˖ ࣪ ⊹ **dm status** ୨୧ ˖\n" +
+            "⊹ let people know if they can dm you."
         },
         {
           group: "interest",
           content:
             "˖ ࣪ ⊹ **interest roles** ୨୧ ˖\n" +
-            "⊹ choose anything you're interested in."
+            "⊹ choose any interests that apply to you."
         },
         {
           group: "game",
           content:
             "˖ ࣪ ⊹ **gaming roles** ୨୧ ˖\n" +
-            "⊹ choose the games and platforms you play."
+            "⊹ choose the games/platforms you play."
         },
         {
           group: "separator",
           content:
             "˖ ࣪ ⊹ **role separators** ୨୧ ˖\n" +
-            "⊹ decorate and organise your profile."
+            "⊹ add or remove separator roles from your profile."
         }
       ];
 
@@ -172,8 +175,17 @@ module.exports = {
           continue;
         }
 
+        const embed = new EmbedBuilder()
+          .setAuthor({
+            name: interaction.client.user.username,
+            iconURL:
+              interaction.client.user.displayAvatarURL()
+          })
+          .setDescription(panel.content)
+          .setColor("#2B0B3F");
+
         await channel.send({
-          content: panel.content,
+          embeds: [embed],
           components: rows
         });
       }
