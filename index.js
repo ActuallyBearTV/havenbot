@@ -18,10 +18,7 @@ const quoteCommand = require("./src/commands/quote");
 const setupServerStatsCommand = require("./src/commands/setupServerStats");
 const { updateServerStats } = require("./src/features/serverStats");
 
-const {
-  buildSuggestionStatusModal
-} = require("./src/modals/suggestionStatus");
-
+const { buildSuggestionStatusModal } = require("./src/modals/suggestionStatus");
 const suggestCommand = require("./src/commands/suggest");
 
 const {
@@ -67,17 +64,13 @@ const ticketCommand = require("./src/commands/ticket");
 const closeTicketCommand = require("./src/commands/closeTicket");
 
 const customAnnouncementModal = require("./src/modals/customAnnouncement");
+const { toggleColourRole } = require("./src/buttons/colourRoles");
 const { toggleOptionalPing } = require("./src/buttons/optionalPings");
 
 const verifyCommand = require("./src/commands/verify");
 const setupColourRoles = require("./src/commands/setupColourRoles");
 const setupOptionalPings = require("./src/commands/setupOptionalPings");
 const postCustom = require("./src/commands/postCustom");
-
-const {
-  handleColourReactionAdd,
-  handleColourReactionRemove
-} = require("./src/events/colourReactionRoles");
 
 const client = new Client({
   intents: [
@@ -108,25 +101,11 @@ client.on("messageCreate", async message => {
   }
 });
 
-client.on("messageReactionAdd", async (reaction, user) => {
+client.on("messageReactionAdd", async reaction => {
   try {
     await handleStarboard(reaction);
   } catch (error) {
     console.error("Starboard error:", error);
-  }
-
-  try {
-    await handleColourReactionAdd(reaction, user);
-  } catch (error) {
-    console.error("Colour reaction role error:", error);
-  }
-});
-
-client.on("messageReactionRemove", async (reaction, user) => {
-  try {
-    await handleColourReactionRemove(reaction, user);
-  } catch (error) {
-    console.error("Colour reaction removal error:", error);
   }
 });
 
@@ -346,6 +325,16 @@ client.on("interactionCreate", async interaction => {
         "open_ticket"
       ) {
         return ticketCommand.execute(
+          interaction
+        );
+      }
+
+      if (
+        interaction.customId.startsWith(
+          "colour_"
+        )
+      ) {
+        return toggleColourRole(
           interaction
         );
       }
