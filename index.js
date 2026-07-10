@@ -685,7 +685,7 @@ if (
           "This command is installed, but this feature has not been connected yet.",
         ephemeral: true
       });
-    }
+    
   } catch (error) {
     console.error(error);
 
