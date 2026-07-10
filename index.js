@@ -93,6 +93,14 @@ client.once("ready", () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 });
 
+client.on("error", error => {
+  console.error("Discord client error:", error);
+});
+
+client.on("shardError", error => {
+  console.error("Discord shard error:", error);
+});
+
 client.on("messageCreate", async message => {
   try {
     await handleMessageXP(message);
@@ -152,9 +160,6 @@ client.on("interactionCreate", async interaction => {
           suggestionId,
           sentMessage.id
         );
-        if (interaction.customId.startsWith("colour_")) {
-  return toggleColourRole(interaction);
-}
 
         return interaction.reply({
           content:
@@ -162,8 +167,7 @@ client.on("interactionCreate", async interaction => {
           ephemeral: true
         });
       }
-
-      if (
+            if (
         interaction.customId.startsWith(
           "suggest_status_"
         )
@@ -417,7 +421,8 @@ client.on("interactionCreate", async interaction => {
       }
 
       if (
-        interaction.commandName === "quote"
+        interaction.commandName ===
+        "quote"
       ) {
         return quoteCommand.execute(
           interaction
@@ -459,8 +464,7 @@ client.on("interactionCreate", async interaction => {
           interaction
         );
       }
-
-      if (
+            if (
         interaction.commandName ===
         "setuplevelrewards"
       ) {
@@ -523,7 +527,8 @@ client.on("interactionCreate", async interaction => {
       }
 
       if (
-        interaction.commandName === "warn"
+        interaction.commandName ===
+        "warn"
       ) {
         return warnCommand.execute(
           interaction
@@ -531,7 +536,8 @@ client.on("interactionCreate", async interaction => {
       }
 
       if (
-        interaction.commandName === "ban"
+        interaction.commandName ===
+        "ban"
       ) {
         return banCommand.execute(
           interaction
@@ -539,7 +545,8 @@ client.on("interactionCreate", async interaction => {
       }
 
       if (
-        interaction.commandName === "kick"
+        interaction.commandName ===
+        "kick"
       ) {
         return kickCommand.execute(
           interaction
@@ -574,7 +581,8 @@ client.on("interactionCreate", async interaction => {
       }
 
       if (
-        interaction.commandName === "lock"
+        interaction.commandName ===
+        "lock"
       ) {
         return lockCommand.execute(
           interaction
@@ -725,48 +733,10 @@ console.log(
   Boolean(process.env.DISCORD_TOKEN)
 );
 
-async function startBot() {
-  try {
-    console.log("Testing Discord API connection...");
-
-    const response = await fetch(
-      "https://discord.com/api/v10/gateway/bot",
-      {
-        headers: {
-          Authorization: `Bot ${process.env.DISCORD_TOKEN}`
-        }
-      }
-    );
-
-    console.log("Discord API status:", response.status);
-
-    if (!response.ok) {
-      const body = await response.text();
-      console.error("Discord API response:", body);
-      return;
-    }
-
-    console.log("✅ Token accepted by Discord.");
-    console.log("Connecting to Discord Gateway...");
-
-    await Promise.race([
-      client.login(process.env.DISCORD_TOKEN),
-
-      new Promise((_, reject) => {
-        setTimeout(() => {
-          reject(
-            new Error(
-              "Discord login timed out after 30 seconds."
-            )
-          );
-        }, 30_000);
-      })
-    ]);
-
-    console.log("✅ Discord login completed.");
-  } catch (error) {
-    console.error("❌ Bot startup failed:", error);
-  }
-}
-
-startBot();
+client.login(process.env.DISCORD_TOKEN)
+  .then(() => {
+    console.log("✅ Discord login request succeeded.");
+  })
+  .catch(error => {
+    console.error("❌ Discord login failed:", error);
+  });
