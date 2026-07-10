@@ -3,10 +3,11 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  EmbedBuilder,
-  PermissionFlagsBits
+  PermissionFlagsBits,
+  AttachmentBuilder
 } = require("discord.js");
 
+const path = require("path");
 const { SELF_ROLES } = require("../config/constants");
 
 function createRows(group) {
@@ -14,14 +15,23 @@ function createRows(group) {
   const rows = [];
 
   for (let i = 0; i < roles.length; i += 5) {
+    const rowRoles = roles.slice(i, i + 5);
+
     rows.push(
       new ActionRowBuilder().addComponents(
-        roles.slice(i, i + 5).map(role =>
-          new ButtonBuilder()
+        rowRoles.map(role => {
+          const button = new ButtonBuilder()
             .setCustomId(role.id)
             .setLabel(role.name)
-            .setStyle(ButtonStyle.Secondary)
-        )
+            .setStyle(ButtonStyle.Secondary);
+
+          // Optional emoji support in constants.js
+          if (role.emoji) {
+            button.setEmoji(role.emoji);
+          }
+
+          return button;
+        })
       )
     );
   }
@@ -32,78 +42,116 @@ function createRows(group) {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("setup-self-roles")
-    .setDescription("Post all Haven self role panels.")
+    .setDescription("Post all Haven self-role panels.")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   async execute(interaction) {
-    const panels = [
-  {
-    group: "age",
-    title: "🔞 Age Roles",
-    description: "Choose your age range."
-  },
-  {
-    group: "gender",
-    title: "⚧️ Gender Roles",
-    description: "Choose your gender role."
-  },
-  {
-    group: "pronouns",
-    title: "💬 Pronoun Roles",
-    description: "Choose your pronouns."
-  },
-  {
-    group: "sexuality",
-    title: "🏳️‍🌈 Sexuality Roles",
-    description: "Choose your sexuality role."
-  },
-  {
-    group: "location",
-    title: "🌍 Location Roles",
-    description: "Choose your location."
-  },
-  {
-    group: "relationship",
-    title: "💞 Relationship Status",
-    description: "Choose your relationship status."
-  },
-  {
-    group: "dms",
-    title: "📩 DM Status",
-    description: "Let people know if they can DM you."
-  },
-  {
-    group: "interest",
-    title: "🎨 Interest Roles",
-    description: "Choose any interests that apply to you."
-  },
-  {
-    group: "game",
-    title: "🎮 Gaming Roles",
-    description: "Choose the games/platforms you play."
-  },
-  {
-    group: "separator",
-    title: "✨ Role Separators",
-    description: "Add or remove separator roles from your profile."
-  }
-];
-
     await interaction.reply({
-      content: "✅ Self role panels posted.",
+      content: "✅ Posting the new self-role panels...",
       ephemeral: true
     });
 
+    /*
+     * Put your banner image here:
+     *
+     * src/assets/roles-banner.png
+     *
+     * Change the path below if your assets folder is elsewhere.
+     */
+    const bannerPath = path.join(
+      __dirname,
+      "../assets/roles-banner.png"
+    );
+
+    const banner = new AttachmentBuilder(bannerPath);
+
+    await interaction.channel.send({
+      files: [banner]
+    });
+
+    const panels = [
+      {
+        group: "age",
+        content:
+          "˖ ࣪ ⊹ **age roles** ୨୧ ˖\n" +
+          "⊹ choose your age range."
+      },
+      {
+        group: "gender",
+        content:
+          "˖ ࣪ ⊹ **gender roles** ୨୧ ˖\n" +
+          "⊹ choose your gender role."
+      },
+      {
+        group: "pronouns",
+        content:
+          "˖ ࣪ ⊹ **pronoun roles** ୨୧ ˖\n" +
+          "⊹ choose your pronouns."
+      },
+      {
+        group: "sexuality",
+        content:
+          "˖ ࣪ ⊹ **sexuality roles** ୨୧ ˖\n" +
+          "⊹ choose your sexuality role."
+      },
+      {
+        group: "relationship",
+        content:
+          "˖ ࣪ ⊹ **relationship roles** ୨୧ ˖\n" +
+          "⊹ choose your relationship status."
+      },
+      {
+        group: "location",
+        content:
+          "˖ ࣪ ⊹ **location roles** ୨୧ ˖\n" +
+          "⊹ choose where you're from."
+      },
+      {
+        group: "dms",
+        content:
+          "˖ ࣪ ⊹ **dm preference** ୨୧ ˖\n" +
+          "⊹ let people know if they can message you."
+      },
+      {
+        group: "interest",
+        content:
+          "˖ ࣪ ⊹ **interest roles** ୨୧ ˖\n" +
+          "⊹ choose anything you're interested in."
+      },
+      {
+        group: "game",
+        content:
+          "˖ ࣪ ⊹ **gaming roles** ୨୧ ˖\n" +
+          "⊹ choose the games and platforms you play."
+      },
+      {
+        group: "separator",
+        content:
+          "˖ ࣪ ⊹ **role separators** ୨୧ ˖\n" +
+          "⊹ decorate and organise your profile."
+      }
+    ];
+
     for (const panel of panels) {
-      const embed = new EmbedBuilder()
-        .setColor("#F472B6")
-        .setTitle(panel.title)
-        .setDescription(panel.description);
+      const rows = createRows(panel.group);
+
+      // Skip categories that currently have no roles
+      if (rows.length === 0) {
+        console.log(
+          `Skipping self-role group "${panel.group}" because it has no roles.`
+        );
+
+        continue;
+      }
 
       await interaction.channel.send({
-        embeds: [embed],
-        components: createRows(panel.group)
+        content: panel.content,
+        components: rows
       });
     }
+
+    await interaction.editReply({
+      content: "✅ The new self-role panels have been posted."
+    });
   }
 };
