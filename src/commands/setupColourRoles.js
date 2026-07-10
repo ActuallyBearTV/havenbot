@@ -24,11 +24,10 @@ function createColourRows() {
     const colours = COLOUR_ROLES.slice(i, i + 4);
 
     for (const colour of colours) {
-      row.addComponents(
+    row.addComponents(
   new ButtonBuilder()
     .setCustomId(colour.id)
     .setLabel(cleanButtonLabel(colour.name))
-    .setEmoji(colour.emoji.match(/<a?:\w+:(\d+)>/)[1])
     .setStyle(ButtonStyle.Secondary)
 );
     }
