@@ -2,25 +2,32 @@ const {
   PermissionFlagsBits,
   ActionRowBuilder,
   ButtonBuilder,
-  ButtonStyle
+  ButtonStyle,
+  AttachmentBuilder,
+  EmbedBuilder
 } = require("discord.js");
 
-const { havenEmbed } = require("../utils/embed");
+const path = require("path");
 const { COLOUR_ROLES } = require("../config/constants");
+
+function cleanButtonLabel(name) {
+  return name
+    .replace(/^[^\p{L}\p{N}]+/u, "")
+    .toLowerCase();
+}
 
 function createColourRows() {
   const rows = [];
 
   for (let i = 0; i < COLOUR_ROLES.length; i += 4) {
     const row = new ActionRowBuilder();
-
     const colours = COLOUR_ROLES.slice(i, i + 4);
 
     for (const colour of colours) {
       row.addComponents(
         new ButtonBuilder()
           .setCustomId(colour.id)
-          .setLabel(colour.name)
+          .setLabel(cleanButtonLabel(colour.name))
           .setStyle(ButtonStyle.Secondary)
       );
     }
@@ -47,7 +54,7 @@ module.exports = {
     }
 
     await interaction.reply({
-      content: "Setting up the colour role menu...",
+      content: "Setting up the colour role panel...",
       ephemeral: true
     });
 
@@ -59,11 +66,12 @@ module.exports = {
       });
 
       const oldPanels = messages.filter(message => {
-        const title = message.embeds[0]?.title;
+        const description =
+          message.embeds[0]?.description || message.content;
 
         return (
           message.author.id === interaction.client.user.id &&
-          title === "🎨 Choose Your Colour"
+          description.includes("**colour roles**")
         );
       });
 
@@ -76,28 +84,44 @@ module.exports = {
         });
       }
 
-      const rows = createColourRows();
+      const bannerPath = path.join(
+        __dirname,
+        "../assets/roles-banner.png"
+      );
+
+      const banner = new AttachmentBuilder(bannerPath);
 
       await channel.send({
-        embeds: [
-          havenEmbed(
-            "🎨 Choose Your Colour",
-            [
-              "Personalise your name with your favourite colour!",
-              "",
-              "Click a button below to choose your colour role.",
-              "",
-              "• You can only have one colour role.",
-              "• Choosing another colour removes your old one.",
-              "• Click your current colour again to remove it."
-            ].join("\n")
-          )
-        ],
+        files: [banner]
+      });
+
+      const rows = createColourRows();
+
+      const embed = new EmbedBuilder()
+        .setAuthor({
+          name: interaction.client.user.username,
+          iconURL:
+            interaction.client.user.displayAvatarURL()
+        })
+        .setDescription(
+          [
+            "˖ ࣪ ⊹ **colour roles** ୨୧ ˖",
+            "⊹ choose your name colour.",
+            "",
+            "• you can only have one colour role.",
+            "• choosing another colour removes your old one.",
+            "• click your current colour again to remove it."
+          ].join("\n")
+        )
+        .setColor("#2B0B3F");
+
+      await channel.send({
+        embeds: [embed],
         components: rows
       });
 
       await interaction.editReply({
-        content: `✅ Colour role menu posted in ${channel}.`
+        content: `✅ Colour role panel posted in ${channel}.`
       });
     } catch (error) {
       console.error("Colour role setup error:", error);
