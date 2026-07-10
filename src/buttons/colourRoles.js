@@ -1,110 +1,82 @@
-const {
-  PermissionFlagsBits,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle
-} = require("discord.js");
-
-const { havenEmbed } = require("../utils/embed");
 const { COLOUR_ROLES } = require("../config/constants");
 
-function createColourRows() {
-  const rows = [];
+async function toggleColourRole(interaction) {
+  const selectedColour = COLOUR_ROLES.find(
+    colour => colour.id === interaction.customId
+  );
 
-  for (let i = 0; i < COLOUR_ROLES.length; i += 4) {
-    const row = new ActionRowBuilder();
+  if (!selectedColour) {
+    return interaction.reply({
+      content: "❌ That colour option could not be found.",
+      ephemeral: true
+    });
+  }
 
-    const colours = COLOUR_ROLES.slice(i, i + 4);
+  const selectedRole = interaction.guild.roles.cache.get(
+    selectedColour.roleId
+  );
 
-    for (const colour of colours) {
-      row.addComponents(
-        new ButtonBuilder()
-          .setCustomId(colour.id)
-          .setLabel(colour.name)
-          .setStyle(ButtonStyle.Secondary)
+  if (!selectedRole) {
+    return interaction.reply({
+      content:
+        "❌ That colour role does not exist. Check its role ID in `roles.js`.",
+      ephemeral: true
+    });
+  }
+
+  const colourRoleIds = COLOUR_ROLES
+    .map(colour => colour.roleId)
+    .filter(Boolean);
+
+  const rolesToRemove = interaction.member.roles.cache
+    .filter(role => {
+      return (
+        colourRoleIds.includes(role.id) &&
+        role.id !== selectedRole.id
+      );
+    })
+    .map(role => role.id);
+
+  try {
+    if (rolesToRemove.length > 0) {
+      await interaction.member.roles.remove(
+        rolesToRemove,
+        "Member selected a different colour role"
       );
     }
 
-    rows.push(row);
-  }
+    if (interaction.member.roles.cache.has(selectedRole.id)) {
+      await interaction.member.roles.remove(
+        selectedRole,
+        "Member removed their colour role"
+      );
 
-  return rows;
-}
-
-module.exports = {
-  name: "setup-colour-roles",
-
-  async execute(interaction) {
-    if (
-      !interaction.memberPermissions.has(
-        PermissionFlagsBits.Administrator
-      )
-    ) {
       return interaction.reply({
-        content: "❌ You need Administrator permission.",
+        content: `✅ Removed ${selectedColour.name}.`,
         ephemeral: true
       });
     }
 
-    await interaction.reply({
-      content: "Setting up the colour role menu...",
+    await interaction.member.roles.add(
+      selectedRole,
+      "Member selected a colour role"
+    );
+
+    return interaction.reply({
+      content: `✅ Your colour is now ${selectedColour.name}.`,
       ephemeral: true
     });
+  } catch (error) {
+    console.error("Colour role button error:", error);
 
-    try {
-      const channel = interaction.channel;
-
-      const messages = await channel.messages.fetch({
-        limit: 100
-      });
-
-      const oldPanels = messages.filter(message => {
-        const title = message.embeds[0]?.title;
-
-        return (
-          message.author.id === interaction.client.user.id &&
-          title === "🎨 Choose Your Colour"
-        );
-      });
-
-      for (const oldPanel of oldPanels.values()) {
-        await oldPanel.delete().catch(error => {
-          console.warn(
-            `Could not delete old colour panel ${oldPanel.id}:`,
-            error.message
-          );
-        });
-      }
-
-      const rows = createColourRows();
-
-      await channel.send({
-        embeds: [
-          havenEmbed(
-            "🎨 Choose Your Colour",
-            [
-              "Personalise your name with your favourite colour!",
-              "",
-              "Click a button below to choose your colour role.",
-              "",
-              "• You can only have one colour role.",
-              "• Choosing another colour removes your old one.",
-              "• Click your current colour again to remove it."
-            ].join("\n")
-          )
-        ],
-        components: rows
-      });
-
-      await interaction.editReply({
-        content: `✅ Colour role menu posted in ${channel}.`
-      });
-    } catch (error) {
-      console.error("Colour role setup error:", error);
-
-      await interaction.editReply({
-        content: `❌ Colour role setup failed: ${error.message}`
-      });
-    }
+    return interaction.reply({
+      content:
+        "❌ I couldn't update your colour role. Make sure my bot role is above all colour roles.",
+      ephemeral: true
+    });
   }
+}
+
+module.exports = {
+  toggleColourRole
 };
