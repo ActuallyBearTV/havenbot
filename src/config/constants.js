@@ -1,18 +1,90 @@
 const Roles = require("./roles");
 
 const COLOUR_ROLES = [
-  { name: "❤️ Crimson", hex: "#E53935", id: "colour_crimson", roleId: Roles.COLOURS.CRIMSON },
-  { name: "🩷 Pink", hex: "#EC4899", id: "colour_pink", roleId: Roles.COLOURS.PINK },
-  { name: "💜 Purple", hex: "#8B5CF6", id: "colour_purple", roleId: Roles.COLOURS.PURPLE },
-  { name: "💙 Blue", hex: "#3B82F6", id: "colour_blue", roleId: Roles.COLOURS.BLUE },
-  { name: "🩵 Cyan", hex: "#06B6D4", id: "colour_cyan", roleId: Roles.COLOURS.CYAN },
-  { name: "💚 Green", hex: "#22C55E", id: "colour_green", roleId: Roles.COLOURS.GREEN },
-  { name: "💛 Yellow", hex: "#FACC15", id: "colour_yellow", roleId: Roles.COLOURS.YELLOW },
-  { name: "🧡 Orange", hex: "#F97316", id: "colour_orange", roleId: Roles.COLOURS.ORANGE },
-  { name: "🤎 Brown", hex: "#8B5A2B", id: "colour_brown", roleId: Roles.COLOURS.BROWN },
-  { name: "🤍 White", hex: "#FFFFFF", id: "colour_white", roleId: Roles.COLOURS.WHITE },
-  { name: "🩶 Grey", hex: "#6B7280", id: "colour_grey", roleId: Roles.COLOURS.GREY },
-  { name: "🖤 Black", hex: "#1F2937", id: "colour_black", roleId: Roles.COLOURS.BLACK }
+  {
+    name: "❤️ Crimson",
+    hex: "#E53935",
+    id: "colour_crimson",
+    roleId: Roles.COLOURS.CRIMSON,
+    emoji: "<:crimson:1525127511225401547>"
+  },
+  {
+    name: "🩷 Pink",
+    hex: "#EC4899",
+    id: "colour_pink",
+    roleId: Roles.COLOURS.PINK,
+    emoji: "<:pink:1525129003017441370>"
+  },
+  {
+    name: "💜 Purple",
+    hex: "#8B5CF6",
+    id: "colour_purple",
+    roleId: Roles.COLOURS.PURPLE,
+    emoji: "<:purple:1525129060596842516>"
+  },
+  {
+    name: "💙 Blue",
+    hex: "#3B82F6",
+    id: "colour_blue",
+    roleId: Roles.COLOURS.BLUE,
+    emoji: "<:purple:1525129106612555906>" // Replace if you have a blue emoji
+  },
+  {
+    name: "🩵 Cyan",
+    hex: "#06B6D4",
+    id: "colour_cyan",
+    roleId: Roles.COLOURS.CYAN,
+    emoji: "<:cyan:1525129173360709822>"
+  },
+  {
+    name: "💚 Green",
+    hex: "#22C55E",
+    id: "colour_green",
+    roleId: Roles.COLOURS.GREEN,
+    emoji: "<:green:1525129203048120450>"
+  },
+  {
+    name: "💛 Yellow",
+    hex: "#FACC15",
+    id: "colour_yellow",
+    roleId: Roles.COLOURS.YELLOW,
+    emoji: "<:yellow:1525129279510417448>"
+  },
+  {
+    name: "🧡 Orange",
+    hex: "#F97316",
+    id: "colour_orange",
+    roleId: Roles.COLOURS.ORANGE,
+    emoji: "<:orange:1525129237294743602>"
+  },
+  {
+    name: "🤎 Brown",
+    hex: "#8B5A2B",
+    id: "colour_brown",
+    roleId: Roles.COLOURS.BROWN,
+    emoji: "<:brown:1525129318156468364>"
+  },
+  {
+    name: "🤍 White",
+    hex: "#FFFFFF",
+    id: "colour_white",
+    roleId: Roles.COLOURS.WHITE,
+    emoji: "<:white:1525129364482556067>"
+  },
+  {
+    name: "🩶 Grey",
+    hex: "#6B7280",
+    id: "colour_grey",
+    roleId: Roles.COLOURS.GREY,
+    emoji: "<:grey:1525129409508671500>"
+  },
+  {
+    name: "🖤 Black",
+    hex: "#1F2937",
+    id: "colour_black",
+    roleId: Roles.COLOURS.BLACK,
+    emoji: "<:black:1525129442811449394>"
+  }
 ];
 
 const OPTIONAL_PINGS = [
