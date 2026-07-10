@@ -66,7 +66,7 @@ const closeTicketCommand = require("./src/commands/closeTicket");
 const customAnnouncementModal = require("./src/modals/customAnnouncement");
 const { toggleColourRole } = require("./src/buttons/colourRoles");
 const { toggleOptionalPing } = require("./src/buttons/optionalPings");
-
+const { toggleColourRole } = require("./src/buttons/colourRoles");
 const verifyCommand = require("./src/commands/verify");
 const setupColourRoles = require("./src/commands/setupColourRoles");
 const setupOptionalPings = require("./src/commands/setupOptionalPings");
