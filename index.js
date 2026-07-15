@@ -8,7 +8,13 @@ const {
 
 const Channels = require("./src/config/channels");
 
+const {
+  handleCountingMessage
+} = require("./src/features/counting");
 
+const setupCountingCommand = require("./src/commands/setupCounting");
+const countingStatsCommand = require("./src/commands/countingStats");
+const countingResetCommand = require("./src/commands/countingReset");
 const exportIdsCommand = require("./src/commands/exportids");
 const listRolesCommand = require("./src/commands/listroles");
 const giveRoleCommand = require("./src/commands/giverole");
@@ -105,7 +111,13 @@ client.on("shardError", error => {
 
 client.on("messageCreate", async message => {
   try {
+
+    const handled = await handleCountingMessage(message);
+
+    if (handled) return;
+
     await handleMessageXP(message);
+
   } catch (error) {
     console.error("Message XP error:", error);
   }
@@ -403,6 +415,32 @@ client.on("interactionCreate", async interaction => {
           interaction
         );
       }
+      if (
+  interaction.commandName ===
+  "setup-counting"
+) {
+  return setupCountingCommand.execute(
+    interaction
+  );
+}
+
+if (
+  interaction.commandName ===
+  "counting-stats"
+) {
+  return countingStatsCommand.execute(
+    interaction
+  );
+}
+
+if (
+  interaction.commandName ===
+  "counting-reset"
+) {
+  return countingResetCommand.execute(
+    interaction
+  );
+}
 
       if (
         interaction.commandName ===
@@ -670,23 +708,7 @@ client.on("interactionCreate", async interaction => {
           interaction
         );
       }
-        if (
-  interaction.commandName ===
-  "setup-optional-pings"
-) {
-  return setupOptionalPings.execute(
-    interaction
-  );
-}
-
-if (
-  interaction.commandName ===
-  "post-custom"
-) {
-  return postCustom.execute(
-    interaction
-  );
-}
+        
       }
 
       return interaction.reply({
