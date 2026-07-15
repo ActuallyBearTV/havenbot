@@ -10,6 +10,7 @@ const {
 } = require("discord.js");
 
 const commands = [
+  
   new SlashCommandBuilder()
   .setName("setup-rules")
   .setDescription("Post the Haven rules panel.")
@@ -290,19 +291,57 @@ const commands = [
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 
   new SlashCommandBuilder()
-    .setName("timeout-user")
-    .setDescription("Timeout a member.")
-    .addUserOption(option =>
-      option.setName("user").setDescription("User").setRequired(true)
-    )
-    .addIntegerOption(option =>
-      option.setName("minutes").setDescription("Minutes").setRequired(true)
-    )
-    .addStringOption(option =>
-      option.setName("reason").setDescription("Reason").setRequired(false)
-    )
-].map(command => command.toJSON());
+  .setName("timeout-user")
+  .setDescription("Timeout a member.")
+  .addUserOption(option =>
+    option
+      .setName("user")
+      .setDescription("User")
+      .setRequired(true)
+  )
+  .addIntegerOption(option =>
+    option
+      .setName("minutes")
+      .setDescription("Minutes")
+      .setRequired(true)
+  )
+  .addStringOption(option =>
+    option
+      .setName("reason")
+      .setDescription("Reason")
+      .setRequired(false)
+  ),
 
+new SlashCommandBuilder()
+  .setName("setup-counting")
+  .setDescription("Set up the Haven counting channel.")
+  .addChannelOption(option =>
+    option
+      .setName("channel")
+      .setDescription("The channel members will count in")
+      .setRequired(true)
+  )
+  .setDefaultMemberPermissions(
+    PermissionFlagsBits.Administrator
+  ),
+
+new SlashCommandBuilder()
+  .setName("counting-stats")
+  .setDescription("View the server counting statistics.")
+  .addUserOption(option =>
+    option
+      .setName("user")
+      .setDescription("The member whose counting statistics you want to view")
+      .setRequired(false)
+  ),
+
+new SlashCommandBuilder()
+  .setName("counting-reset")
+  .setDescription("Reset the counting number back to zero.")
+  .setDefaultMemberPermissions(
+    PermissionFlagsBits.Administrator
+  )
+].map(command => command.toJSON());
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 
 (async () => {
